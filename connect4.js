@@ -32,30 +32,22 @@ function placeCounter(board, column, colour) {
     for (let row=board.length-1; row >= 0; row--) {
         // if the appropriate cell is free place a cirlce
         if (board[row][column] === null) {
-            console.log("row = "+row+" column = "+column)
-            newBoard[row][column] = colour
-
-            // get the current circle and change to the appropriate colour
-            $("#circle-row-"+row+"-column-"+column).css("background-color", colour)
-
-            return newBoard
+            return [row,column]
         }
     }
-    return newBoard
+    return [null,null]
 }
 
-function resetGame(board){
+function resetGame(){
     console.log("reset game was called")
-    const newBoard = board
-    for (i=0; i<board.length; i++){
-        for(j=0; j<board[i].length; j++){
-            newBoard[i][j] = null
-
-            $("#circle-row-"+i+"-column-"+j).css("background-color", "white")
-        }
-    }
-    return newBoard
-    
+    return [
+        [null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null]
+    ]
 }
 
 function checkWinner(board) {
@@ -167,21 +159,10 @@ function checkWinner(board) {
     return null
 }
 
-function updateDisplay(winner) {
-    console.log("updateDisplay was called")
-    const winnerName = document.getElementById("winner-name");
-    winnerName.innerText = winner;
-    const winnerDisplay = document.getElementById("winner-display");
-    winnerDisplay.style.display = "block";
-    resetGame(board)
-
-}
-
 module = module || {};
 module.exports = {
     drawGrid: drawGrid,
     checkWinner: checkWinner,
     resetGame: resetGame,
     placeCounter: placeCounter,
-    updateDisplay: updateDisplay,
 }

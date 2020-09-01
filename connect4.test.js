@@ -1,4 +1,4 @@
-const { drawGrid, checkWinner, resetGame, placeCounter, updateDisplay } = require('./connect4');
+const { drawGrid, checkWinner, resetGame, placeCounter } = require('./connect4');
 const each = require("jest-each").default;
 
 describe("test placeCounter", () => {
@@ -26,21 +26,21 @@ describe("test placeCounter", () => {
         ],
         [
             [
+                ["yellow",null,null,null,null,null,null],
                 ["red",null,null,null,null,null,null],
+                ["yellow",null,null,null,null,null,null],
                 ["red",null,null,null,null,null,null],
-                ["red",null,null,null,null,null,null],
-                ["red",null,null,null,null,null,null],
-                ["red",null,null,null,null,null,null],
+                ["yellow",null,null,null,null,null,null],
                 ["red",null,null,null,null,null,null]
             ],
             0,
             "red",
             [
+                ["yellow",null,null,null,null,null,null],
                 ["red",null,null,null,null,null,null],
+                ["yellow",null,null,null,null,null,null],
                 ["red",null,null,null,null,null,null],
-                ["red",null,null,null,null,null,null],
-                ["red",null,null,null,null,null,null],
-                ["red",null,null,null,null,null,null],
+                ["yellow",null,null,null,null,null,null],
                 ["red",null,null,null,null,null,null]
             ],
         ]

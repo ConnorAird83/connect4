@@ -40,6 +40,7 @@ body {
     border-width: 1rem;
     border-color: black;
     border-style: solid;
+    border-radius: 4%;
 }
 
 .flex-container {
