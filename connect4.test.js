@@ -15,7 +15,14 @@ describe("test placeCounter", () => {
             ],
             0,
             "red",
-            true
+            [
+                [null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null],
+                ["red",null,null,null,null,null,null]
+            ],
         ],
         [
             [
@@ -28,7 +35,14 @@ describe("test placeCounter", () => {
             ],
             0,
             "red",
-            false
+            [
+                ["red",null,null,null,null,null,null],
+                ["red",null,null,null,null,null,null],
+                ["red",null,null,null,null,null,null],
+                ["red",null,null,null,null,null,null],
+                ["red",null,null,null,null,null,null],
+                ["red",null,null,null,null,null,null]
+            ],
         ]
     ]).it("When the input is '%s'", (board, column, player, expected_output) => {
         //Act
@@ -51,7 +65,7 @@ describe ("test checkWinner", () => {
                 [null,null,null,null,null,null,null]
             ],
             null
-        ]
+        ],
         [
             [
                 ["red",null,null,null,null,null,null],
@@ -71,6 +85,17 @@ describe ("test checkWinner", () => {
                 [null,"yellow",null,null,null,null,null],
                 [null,"yellow",null,null,null,null,null],
                 [null,"red","red","red","red",null,null]
+            ],
+            "red"
+        ],
+        [
+            [
+                [null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null],
+                [null,null,null,"red",null,null,null],
+                [null,null,"red","yellow",null,null,null],
+                [null,"red","red","yellow",null,null,null],
+                ["red","yellow","yellow","yellow","red",null,null]
             ],
             "red"
         ]

@@ -25,17 +25,19 @@ function drawGrid (numberOfRows, numberOfColumns) {
     }
 }
 
-function placeCounter(board, column, colour){
+function placeCounter(board, column, colour) {
     console.log("placeCounter was called")
     const newBoard = board
     // loop over rows starting from the bottom 
     for (let row=board.length-1; row >= 0; row--) {
         // if the appropriate cell is free place a cirlce
         if (board[row][column] === null) {
+            console.log("row = "+row+" column = "+column)
             newBoard[row][column] = colour
+
             // get the current circle and change to the appropriate colour
-            const currentCircle = document.getElementById("circle-row-"+row+"-column-"+column)
-            currentCircle.style.backgroundColor = colour;
+            $("#circle-row-"+row+"-column-"+column).css("background-color", colour)
+
             return newBoard
         }
     }
@@ -48,8 +50,8 @@ function resetGame(board){
     for (i=0; i<board.length; i++){
         for(j=0; j<board[i].length; j++){
             newBoard[i][j] = null
-            const currentCircle = document.getElementById("circle-row-"+i+"-column-"+j)
-            currentCircle.style.backgroundColor = "white"
+
+            $("#circle-row-"+i+"-column-"+j).css("background-color", "white")
         }
     }
     return newBoard
@@ -73,13 +75,11 @@ function checkWinner(board) {
                 redCount = 0
                 yellowCount = 0
                 winner = null
-            } else if (board[row][column] = "red") {
-                console.log("checking for rows ("+row+", "+column+") is red")
+            } else if (board[row][column] === "red") {
                 redCount += 1
                 yellowCount = 0
                 winner = "red"
-            } else if (board[row][column] = "yellow") {
-                console.log("checking for rows ("+row+", "+column+") is yellow")
+            } else if (board[row][column] === "yellow") {
                 yellowCount += 1
                 redCount = 0
                 winner = "yellow"
@@ -98,6 +98,7 @@ function checkWinner(board) {
 
     redCount = 0
     yellowCount = 0
+    winner = null
 
     /* check for column wins */
     // loop over columns
@@ -110,13 +111,11 @@ function checkWinner(board) {
                 redCount = 0
                 yellowCount = 0
                 winner = null
-            } else if (board[row][column] = "red") {
-                console.log("checking for columns ("+row+", "+column+") is red")
+            } else if (board[row][column] === "red") {
                 redCount += 1
                 yellowCount = 0
                 winner = "red"
-            } else if (board[row][column] = "yellow") {
-                console.log("checking for columns ("+row+", "+column+") is yellow")
+            } else if (board[row][column] === "yellow") {
                 yellowCount += 1
                 redCount = 0
                 winner = "yellow"
@@ -133,24 +132,29 @@ function checkWinner(board) {
         }
     }
 
+    winner = null
+
     /* Check for diagonal wins */
     // loop over rows
-    for (let row=board.length-1; row >= 0; row--) {
+    for (let row=0; row < board.length-3; row++) {
         let leftCounter = 0
         let rightCounter = board[0].length-1
         // loop over columns
         for (let column=0; column < board[0].length-3; column++) {
+            // console.log("row = "+row+" leftCounter = "+leftCounter+" rightCounter = "+rightCounter)
             // if a colour is encountered
-            if (board[row][leftCounter] !== null){
+            if (board[row][leftCounter] !== null) {
+                winner = board[row][leftCounter]
                 // if there is four in a diagonal down to the right return the winner 
-                if (board[row][leftCounter] === board[row-1][leftCounter+1] && board[row-1][leftCounter+1] === board[row-2][leftCounter+2] && board[row-2][leftCounter+2] === board[row-3][leftCounter+3]) {
+                if ((board[row][leftCounter] === board[row+1][leftCounter+1]) && (board[row+1][leftCounter+1] === board[row+2][leftCounter+2]) && (board[row+2][leftCounter+2] === board[row+3][leftCounter+3])) {
                     return winner
                 }
             }
             // if a colour is encountered
             if (board[row][rightCounter] !== null) {
+                winner = board[row][rightCounter]
                 // if there is four in a diagonal down to the left return the winner
-                if ((board[row][rightCounter] === board[row-1][rightCounter-1]) && (board[row-1][rightColumn-1] === board[row-2][rightColumn-2]) && (board[row-2][rightColumn-2] === board[row-3][rightColumn-3])) {
+                if ((board[row][rightCounter] === board[row+1][rightCounter-1]) && (board[row+1][rightCounter-1] === board[row+2][rightCounter-2]) && (board[row+2][rightCounter-2] === board[row+3][rightCounter-3])) {
                     return winner
                 }
             }
@@ -159,12 +163,11 @@ function checkWinner(board) {
             rightCounter -= 1
         }
     }
-
     // if no winner has been encountered return null
     return null
 }
 
-function updateDisplay(winner){
+function updateDisplay(winner) {
     console.log("updateDisplay was called")
     const winnerName = document.getElementById("winner-name");
     winnerName.innerText = winner;

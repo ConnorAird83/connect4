@@ -18,12 +18,11 @@ let numberOfTurns = 0
 //listen for click on column
 for (let i=0; i<board.length; i++) {
     for (let j=0; j<board[0].length; j++) {
-        const column = document.getElementById("row-"+i+"-column-"+j)
-        column.addEventListener("click", function () {
+
+        $("#row-"+i+"-column-"+j).click(function () {
             // Get banner for displaying the winning player and stop displaying 
-            const winnerDisplay = document.getElementById("winner-display")
-            winnerDisplay.style.display = "none"
-                        
+            $("#winner-display").css("display", "none")
+            
             board = placeCounter(board, j, player)
             if (player === "red") {
                 player = "yellow"
@@ -34,7 +33,7 @@ for (let i=0; i<board.length; i++) {
             if (winner !== null) {
                 updateDisplay(winner)
             }
-        }, true)
+        })
     }
 }
 
