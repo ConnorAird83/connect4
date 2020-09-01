@@ -1,64 +1,34 @@
 <!doctype html>
 
 <html>
-    <head></head>
-    <body>
-        <h1>Connect 4</h1>
-        <div id="grid">
-            <div class="row"
-                 id="row-0">
-              <div class="column"
-                   id="row-0-column-0"></div>
-              <div class="column"
-                   id="row-0-column-1"></div>
-              <div class="column"
-                   id="row-0-column-2"></div>
-            </div>
-            <div class="row"
-                 id="row-1">
-              <div class="column"
-                   id="row-1-column-0"></div>
-              <div class="column"
-                   id="row-1-column-1"></div>
-              <div class="column"
-                   id="row-1-column-2"></div>
-            </div>
-            <div class="row"
-                 id="row-2">
-              <div class="column"
-                   id="row-2-column-0"></div>
-              <div class="column"
-                   id="row-2-column-1"></div>
-              <div class="column"
-                   id="row-2-column-2"></div>
-            </div>
-            <div class="row"
-                 id="row-3">
-              <div class="column"
-                   id="row-3-column-0"></div>
-              <div class="column"
-                   id="row-3-column-1"></div>
-              <div class="column"
-                   id="row-3-column-2"></div>
-            </div>
-            <div class="row"
-                 id="row-4">
-              <div class="column"
-                   id="row-4-column-0"></div>
-              <div class="column"
-                   id="row-4-column-1"></div>
-              <div class="column"
-                   id="row-4-column-2"></div>
-            </div>
-            <div class="row"
-                 id="row-5">
-              <div class="column"
-                   id="row-5-column-0"></div>
-              <div class="column"
-                   id="row-5-column-1"></div>
-              <div class="column"
-                   id="row-5-column-2"></div>
-            </div>
-          </div>
-    </body>
+
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="flex-container">
+    <div>
+      <h1 class="blue-text jumbotron">Connect 4</h1>
+      <div id="inputs">
+        <p>Rows: </p>
+        <input class="input" id="num-rows" type="text" name="num-rows" />
+        <p> Columns: </p>
+        <input class="input" id="num-columns" type="text" name="num-columns" />
+      </div>
+    </div>
+    <p id="winner-display">The winner is <span id="winner-name"></span></p>
+    <p id="Player_win_count">Player 1:<span id="winner-count1"></span> Player 2:<span id="winner-count2"></span></p>
+
+    <div id="grid"></div>
+    <div><button class="reset-button" id="reset-button">Reset</button></div>
+  </div>
+
+
+  <script src="./connect4.js"></script>
+  <script src="./joiner.js"></script>
+</body>
+
 </html>
