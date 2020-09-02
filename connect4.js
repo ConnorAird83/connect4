@@ -1,6 +1,5 @@
 function drawGrid (numberOfRows, numberOfColumns) {
     console.log("drawGrid was called")
-    const grid = document.getElementById("game-board")
     for (let i=0; i<numberOfRows; i++){
         $("#game-board").append("<div class='row' id='row-"+i+"'></div>")
         for (let j=0; j<numberOfColumns; j++){
