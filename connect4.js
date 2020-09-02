@@ -5,6 +5,10 @@ function drawGrid (numberOfRows, numberOfColumns) {
         for (let j=0; j<numberOfColumns; j++){
             $("#row-"+i).append("<div class='column' id='row-"+i+"-column-"+j+"'></div>")
             $("#row-"+i+"-column-"+j).append("<div class='circle' id='circle-row-"+i+"-column-"+j+"'></div>")
+
+            //set the size of the columns and circles to fit the game board
+            let columnWidth = 100 / numberOfColumns
+            $("#row-"+i+"-column-"+j).css("width", columnWidth+"%")
         }
     }
 }
@@ -14,7 +18,7 @@ function placeCounter(board, column, colour) {
     const newBoard = board
     // loop over rows starting from the bottom 
     for (let row=board.length-1; row >= 0; row--) {
-        // if the appropriate cell is free place a cirlce
+        // if the appropriate cell is free return it's  position
         if (board[row][column] === null) {
             return [row,column]
         }
@@ -22,16 +26,18 @@ function placeCounter(board, column, colour) {
     return [null,null]
 }
 
-function resetGame(){
+function cleanBoard(rows, columns){
     console.log("reset game was called")
-    return [
-        [null,null,null,null,null,null,null],
-        [null,null,null,null,null,null,null],
-        [null,null,null,null,null,null,null],
-        [null,null,null,null,null,null,null],
-        [null,null,null,null,null,null,null],
-        [null,null,null,null,null,null,null]
-    ]
+    let rowArray = []
+    let board = []
+    for (let i=0; i<columns; i++) {
+        rowArray.push(null)
+    }
+    for (let j=0; j<rows; j++){
+        board.push(rowArray)
+    }
+    console.log(board)
+    return board
 }
 
 function checkWinner(board) {
@@ -147,6 +153,6 @@ module = module || {};
 module.exports = {
     drawGrid: drawGrid,
     checkWinner: checkWinner,
-    resetGame: resetGame,
+    cleanBoard: cleanBoard,
     placeCounter: placeCounter,
 }

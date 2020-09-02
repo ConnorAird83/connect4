@@ -11,18 +11,19 @@
 
 <body>
   <div class="flex-container">
-    <h1 class="blue-text jumbotron">Connect 4</h1>
+    <h1 class="banner jumbotron">Connect 4</h1>
     <div id="inputs">
       <p>Rows: </p>
       <input class="input" id="num-rows" type="text" name="num-rows" />
       <p> Columns: </p>
       <input class="input" id="num-columns" type="text" name="num-columns" />
     </div>
+    <button id="draw-board">Punch holes</button>
     <p id="winner-display">The winner is <span id="winner-name"></span></p>
     <p id="Player_win_count">Player 1:<span id="winner-count1"></span> Player 2:<span id="winner-count2"></span></p>
 
     <div id="game-board"></div>
-    <div><button class="reset-button" id="reset-button">Reset</button></div>
+    <button class="reset-button" id="reset-button">Reset</button>
   </div>
 
 

@@ -1,4 +1,4 @@
-const { drawGrid, checkWinner, resetGame, placeCounter } = require('./connect4');
+const { drawGrid, checkWinner, cleanBoard, placeCounter } = require('./connect4');
 const each = require("jest-each").default;
 
 describe("test placeCounter", () => {
