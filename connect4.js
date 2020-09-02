@@ -1,26 +1,11 @@
 function drawGrid (numberOfRows, numberOfColumns) {
     console.log("drawGrid was called")
-    const grid = document.getElementById("grid")
+    const grid = document.getElementById("game-board")
     for (let i=0; i<numberOfRows; i++){
-        //create a new row element
-        let row = document.createElement("div")
-        row.className = "row"
-        row.id = "row-"+i
-        //place row in grid
-        grid.appendChild(row)
+        $("#game-board").append("<div class='row' id='row-"+i+"'></div>")
         for (let j=0; j<numberOfColumns; j++){
-            //create column element
-            let column = document.createElement("div")
-            column.className= "column"
-            column.id = "row-" + i + "-column-"+j;
-            //create circle element
-            const circle = document.createElement("div")
-            circle.className = "circle"
-            circle.id = "circle-row-"+i+"-column-"+j;
-            //place circle in column
-            column.appendChild(circle)
-            //place column in row
-            row.appendChild(column);
+            $("#row-"+i).append("<div class='column' id='row-"+i+"-column-"+j+"'></div>")
+            $("#row-"+i+"-column-"+j).append("<div class='circle' id='circle-row-"+i+"-column-"+j+"'></div>")
         }
     }
 }
