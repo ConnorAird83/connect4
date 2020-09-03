@@ -31,42 +31,34 @@ function checkWinner(board) {
   let yellowCount = 0;
 
   /* check for row win */
-  // loop over rows
-  for (let row = board.length - 1; row >= 0; row -= 1) {
-    // loop over columns
-    for (let column = 0; column < board[0].length; column += 1) {
-      if (redCount >= 4 || yellowCount >= 4) {
-        return winner;
-      // eslint-disable-next-line no-else-return
-      } else if (board[row][column] === null) {
-        redCount = 0;
-        yellowCount = 0;
-        winner = null;
-      } else if (board[row][column] === 'red') {
-        redCount += 1;
-        yellowCount = 0;
-        winner = 'red';
-      } else if (board[row][column] === 'yellow') {
-        yellowCount += 1;
-        redCount = 0;
-        winner = 'yellow';
-      } else {
-        console.log(`Incorrect variable in board at (${row}, ${column})`);
-      }
+  // fills an array with a string of the first letters of each element in each row (r, y or n)
+  const rowStringsArray = board.map((row) => row.reduce((string, column) => {
+    if (column === null) {
+      return `${string}n`;
     }
-    // check for 4 or more in row
-    if (redCount >= 4 || yellowCount >= 4) {
-      return winner;
-    // eslint-disable-next-line no-else-return
-    } else {
-      redCount = 0;
-      yellowCount = 0;
-    }
-  }
+    return `${string}${column[0]}`;
+  }, ''));
 
-  redCount = 0;
-  yellowCount = 0;
-  winner = null;
+  // if a row includes a string of 4 r's or y's set winner to 'red' or 'yellow' respectively
+  winner = rowStringsArray.reduce((result, row) => {
+    let tempResult = null;
+    // only edit the returned value if a winner has npt yet been found
+    if (result === null) {
+      // if four r's or y's are found in a row edit the returned result as appropriate
+      if (row.includes('rrrr')) {
+        tempResult = 'red';
+      } else if (row.includes('yyyy')) {
+        tempResult = 'yellow';
+      }
+      return tempResult;
+    }
+    // Will return here if the winner has already been found
+    return result;
+  }, null);
+
+  if (winner !== null) {
+    return winner;
+  }
 
   /* check for column wins */
   // loop over columns
@@ -139,14 +131,13 @@ function checkWinner(board) {
       rightCounter -= 1;
     }
   }
+
+  /* check for nobody winning */
+  // only true is every column in every row is not null
+  if (board.every((row) => row.every((cell) => cell !== null))) {
+    return 'nobody';
+  }
+
   // if no winner has been encountered return null
   return null;
 }
-
-module = module || {};
-module.exports = {
-  drawGrid,
-  checkWinner,
-  cleanBoard,
-  placeCounter,
-};
