@@ -18,5 +18,10 @@
   "homepage": "https://github.com/ConnorAird83/connect4#readme",
   "dependencies": {
     "jest": "^26.4.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.8.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
   }
 }

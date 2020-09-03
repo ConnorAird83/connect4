@@ -1,158 +1,152 @@
-function drawGrid (numberOfRows, numberOfColumns) {
-    console.log("drawGrid was called")
-    for (let i=0; i<numberOfRows; i++){
-        $("#game-board").append("<div class='row' id='row-"+i+"'></div>")
-        for (let j=0; j<numberOfColumns; j++){
-            $("#row-"+i).append("<div class='column' id='row-"+i+"-column-"+j+"'></div>")
-            $("#row-"+i+"-column-"+j).append("<div class='circle' id='circle-row-"+i+"-column-"+j+"'></div>")
-
-            //set the size of the columns and circles to fit the game board
-            let columnWidth = 100 / numberOfColumns
-            $("#row-"+i+"-column-"+j).css("width", columnWidth+"%")
-        }
+function placeCounter(board, column) {
+  console.log('placeCounter was called');
+  // loop over rows starting from the bottom
+  for (let row = board.length - 1; row >= 0; row -= 1) {
+    // if the appropriate cell is free return it's  position
+    if (board[row][column] === null) {
+      return row;
     }
+  }
+  return null;
 }
 
-function placeCounter(board, column, colour) {
-    console.log("placeCounter was called")
-    const newBoard = board
-    // loop over rows starting from the bottom 
-    for (let row=board.length-1; row >= 0; row--) {
-        // if the appropriate cell is free return it's  position
-        if (board[row][column] === null) {
-            return [row,column]
-        }
-    }
-    return [null,null]
-}
-
-function cleanBoard(rows, columns){
-    console.log("reset game was called")
-    let rowArray = []
-    let board = []
-    for (let i=0; i<columns; i++) {
-        rowArray.push(null)
-    }
-    for (let j=0; j<rows; j++){
-        board.push(rowArray)
-    }
-    console.log(board)
-    return board
+function cleanBoard(rows, columns) {
+  console.log('reset game was called');
+  const rowArray = [];
+  const board = [];
+  for (let i = 0; i < columns; i += 1) {
+    rowArray.push(null);
+  }
+  for (let j = 0; j < rows; j += 1) {
+    board.push(rowArray);
+  }
+  console.log(board);
+  return board;
 }
 
 function checkWinner(board) {
-    console.log("checkWinner was called")
-    let winner = null
-    let redCount = 0
-    let yellowCount = 0
+  console.log('checkWinner was called');
+  let winner = null;
+  let redCount = 0;
+  let yellowCount = 0;
 
-    /* check for row win */
-    // loop over rows
-    for (let row=board.length-1; row >= 0; row--) {
-        // loop over columns
-        for (let column=0; column<board[0].length; column++) {
-            if (redCount >= 4 || yellowCount >= 4) {
-                return winner
-            } else if (board[row][column] === null) {
-                redCount = 0
-                yellowCount = 0
-                winner = null
-            } else if (board[row][column] === "red") {
-                redCount += 1
-                yellowCount = 0
-                winner = "red"
-            } else if (board[row][column] === "yellow") {
-                yellowCount += 1
-                redCount = 0
-                winner = "yellow"
-            } else {
-                console.log("Incorrect variable in board at ("+row+", "+column+")")
-            }
-        }
-        //check for 4 or more in row 
-        if (redCount >= 4 || yellowCount >= 4) {
-            return winner
-        } else {
-            redCount = 0
-            yellowCount = 0
-        }
-    }
-
-    redCount = 0
-    yellowCount = 0
-    winner = null
-
-    /* check for column wins */
+  /* check for row win */
+  // loop over rows
+  for (let row = board.length - 1; row >= 0; row -= 1) {
     // loop over columns
-    for (let column=0; column<board[0].length; column++) {
-        // loop over rows (bottom to top)
-        for (let row=board.length-1; row >= 0; row--) {
-            if (redCount >= 4 || yellowCount >= 4) {
-                return winner
-            } else if (board[row][column] === null) {
-                redCount = 0
-                yellowCount = 0
-                winner = null
-            } else if (board[row][column] === "red") {
-                redCount += 1
-                yellowCount = 0
-                winner = "red"
-            } else if (board[row][column] === "yellow") {
-                yellowCount += 1
-                redCount = 0
-                winner = "yellow"
-            } else {
-                console.log("Incorrect variable in board at ("+row+", "+column+")")
-            }
-        }
-        //check for 4 or more in row 
-        if (redCount >= 4 || yellowCount >= 4) {
-            return winner
-        } else {
-            redCount = 0
-            yellowCount = 0
-        }
+    for (let column = 0; column < board[0].length; column += 1) {
+      if (redCount >= 4 || yellowCount >= 4) {
+        return winner;
+      // eslint-disable-next-line no-else-return
+      } else if (board[row][column] === null) {
+        redCount = 0;
+        yellowCount = 0;
+        winner = null;
+      } else if (board[row][column] === 'red') {
+        redCount += 1;
+        yellowCount = 0;
+        winner = 'red';
+      } else if (board[row][column] === 'yellow') {
+        yellowCount += 1;
+        redCount = 0;
+        winner = 'yellow';
+      } else {
+        console.log(`Incorrect variable in board at (${row}, ${column})`);
+      }
     }
-
-    winner = null
-
-    /* Check for diagonal wins */
-    // loop over rows
-    for (let row=0; row < board.length-3; row++) {
-        let leftCounter = 0
-        let rightCounter = board[0].length-1
-        // loop over columns
-        for (let column=0; column < board[0].length-3; column++) {
-            // console.log("row = "+row+" leftCounter = "+leftCounter+" rightCounter = "+rightCounter)
-            // if a colour is encountered
-            if (board[row][leftCounter] !== null) {
-                winner = board[row][leftCounter]
-                // if there is four in a diagonal down to the right return the winner 
-                if ((board[row][leftCounter] === board[row+1][leftCounter+1]) && (board[row+1][leftCounter+1] === board[row+2][leftCounter+2]) && (board[row+2][leftCounter+2] === board[row+3][leftCounter+3])) {
-                    return winner
-                }
-            }
-            // if a colour is encountered
-            if (board[row][rightCounter] !== null) {
-                winner = board[row][rightCounter]
-                // if there is four in a diagonal down to the left return the winner
-                if ((board[row][rightCounter] === board[row+1][rightCounter-1]) && (board[row+1][rightCounter-1] === board[row+2][rightCounter-2]) && (board[row+2][rightCounter-2] === board[row+3][rightCounter-3])) {
-                    return winner
-                }
-            }
-            //increment counters to test for diagonals to the left and right
-            leftCounter += 1
-            rightCounter -= 1
-        }
+    // check for 4 or more in row
+    if (redCount >= 4 || yellowCount >= 4) {
+      return winner;
+    // eslint-disable-next-line no-else-return
+    } else {
+      redCount = 0;
+      yellowCount = 0;
     }
-    // if no winner has been encountered return null
-    return null
+  }
+
+  redCount = 0;
+  yellowCount = 0;
+  winner = null;
+
+  /* check for column wins */
+  // loop over columns
+  for (let column = 0; column < board[0].length; column += 1) {
+    // loop over rows (bottom to top)
+    for (let row = board.length - 1; row >= 0; row -= 1) {
+      if (redCount >= 4 || yellowCount >= 4) {
+        return winner;
+      // eslint-disable-next-line no-else-return
+      } else if (board[row][column] === null) {
+        redCount = 0;
+        yellowCount = 0;
+        winner = null;
+      } else if (board[row][column] === 'red') {
+        redCount += 1;
+        yellowCount = 0;
+        winner = 'red';
+      } else if (board[row][column] === 'yellow') {
+        yellowCount += 1;
+        redCount = 0;
+        winner = 'yellow';
+      } else {
+        console.log(`Incorrect variable in board at (${row}, ${column})`);
+      }
+    }
+    // check for 4 or more in row
+    if (redCount >= 4 || yellowCount >= 4) {
+      return winner;
+    // eslint-disable-next-line no-else-return
+    } else {
+      redCount = 0;
+      yellowCount = 0;
+    }
+  }
+
+  winner = null;
+
+  /* Check for diagonal wins */
+  // loop over rows
+  for (let row = 0; row < board.length - 3; row += 1) {
+    let leftCounter = 0;
+    let rightCounter = board[0].length - 1;
+    // loop over columns
+    for (let column = 0; column < board[0].length - 3; column += 1) {
+      // console.log("row = "+row+" leftCounter = "+leftCounter+" rightCounter = "+rightCounter)
+      // if a colour is encountered
+      if (board[row][leftCounter] !== null) {
+        winner = board[row][leftCounter];
+        // if there is four in a diagonal down to the right return the winner
+        if (
+          (board[row][leftCounter] === board[row + 1][leftCounter + 1])
+          && (board[row + 1][leftCounter + 1] === board[row + 2][leftCounter + 2])
+          && (board[row + 2][leftCounter + 2] === board[row + 3][leftCounter + 3])) {
+          return winner;
+        }
+      }
+      // if a colour is encountered
+      if (board[row][rightCounter] !== null) {
+        winner = board[row][rightCounter];
+        // if there is four in a diagonal down to the left return the winner
+        if (
+          (board[row][rightCounter] === board[row + 1][rightCounter - 1])
+          && (board[row + 1][rightCounter - 1] === board[row + 2][rightCounter - 2])
+          && (board[row + 2][rightCounter - 2] === board[row + 3][rightCounter - 3])) {
+          return winner;
+        }
+      }
+      // increment counters to test for diagonals to the left and right
+      leftCounter += 1;
+      rightCounter -= 1;
+    }
+  }
+  // if no winner has been encountered return null
+  return null;
 }
 
 module = module || {};
 module.exports = {
-    drawGrid: drawGrid,
-    checkWinner: checkWinner,
-    cleanBoard: cleanBoard,
-    placeCounter: placeCounter,
-}
+  drawGrid,
+  checkWinner,
+  cleanBoard,
+  placeCounter,
+};
