@@ -11,6 +11,8 @@ let player = 'red';
 let gameInProgress = true;
 let rows = 6;
 let columns = 7;
+let redWins = 0;
+let yellowWins = 0;
 
 function drawGrid(numberOfRows, numberOfColumns) {
   // console.log('drawGrid was called');
@@ -48,11 +50,12 @@ function updateDataBoard(row, column) {
 }
 
 function updateScreenBoard(row, column) {
-  $(`#circle-row-${row}-column-${column}`).css('background-color', player);
-}
-
-function removeColumnListeners() {
-  $('.column').unbind();
+  $(`#circle-row-${row}-column-${column}`).css('background-color', player).css('opacity', 1);
+  if (player === 'red') {
+    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'yellow').css('opacity', 0.8);
+  } else {
+    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'red').css('opacity', 0.8);
+  }
 }
 
 function createDataBoard(rows, columns) {
@@ -80,7 +83,7 @@ function columnClicked(event) {
   // only execute if no one has won yet
   if (gameInProgress) {
     // gets the id of the lowest child (target) in the mouse click event
-    const column = parseInt(event.target.id.split('-')[4], 10);
+    const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
     // check if a counter can be placed
     const row = placeCounter(board, column);
@@ -100,9 +103,20 @@ function columnClicked(event) {
         // prevent further coin placing
         gameInProgress = false;
 
+        // stop indicating a players turn
+        $(`#${player}-player`).css('color', 'black');
+
         // display the winner on the screen
-        $('#winner-name').text(winner);
-        $('#winner-display').css('display', 'block');
+        $('#winner-display').css('color', winner);
+        $('#winner-display').fadeIn(200);
+        $('#winner-display').fadeOut(1000);
+
+        // update the each players win count
+        if (winner !== 'nobody') {
+          const element = $(`#${winner}-win-count`);
+          const currentValue = Number.parseInt(element.text(), 10);
+          element.text(currentValue + 1);
+        }
       }
     }
   } else {
@@ -110,13 +124,41 @@ function columnClicked(event) {
   }
 }
 
+function mouseOn(event) {
+  // find the current column
+  const column = parseInt(event.currentTarget.id.split('-')[3], 10);
+  // find the first row with a free space
+  const row = placeCounter(board, column);
+
+  // change the colour of that circle to pastille version of the colours
+  if (row !== null) {
+    $(`#circle-row-${row}-column-${column}`).css('background-color', player).css('opacity', 0.8);
+  }
+}
+
+function mouseOff(event) {
+  // find the current column
+  const column = parseInt(event.currentTarget.id.split('-')[3], 10);
+  // find the first row with a free space
+  const row = placeCounter(board, column);
+
+  // change the colour of that circle to pastille version of the colours
+  if (row !== null) {
+    $(`#circle-row-${row}-column-${column}`).css('background-color', 'white').css('opacity', 1);
+  }
+}
+
 function setupListeners() {
   // get the child rows of game board as jQuery array
-  const rows = $('#game-board').children();
+  const rowArray = $('#game-board').children();
 
   // loop through these rows adding event listeners to each (inc children)
-  rows.each((row) => {
-    rows[row].onclick = columnClicked;
+  rowArray.each((row) => {
+    const cells = $(`#${rowArray[row].id}`).children();
+    cells.each((circles) => {
+      $(`#${cells[circles].id}`).click(columnClicked);
+      $(`#${cells[circles].id}`).hover(mouseOn, mouseOff);
+    });
   });
 }
 
@@ -132,6 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // draw the circles on the window and create the board data structure
   $('#draw-board').click(() => {
+    // allow the placing of more counters
+    gameInProgress = true;
+
     // delete rows, columns, circles and their listeners
     $('.row').remove();
 
@@ -149,10 +194,26 @@ $('#reset-button').click(() => {
   // allow the placing of more counters
   gameInProgress = true;
 
+  // reset the first player back to red
+  player = 'red';
+
   // set all board circle to white
-  $('.circle').css('background-color', 'white');
+  $('.circle').css('background-color', 'white').css('opacity', 1);
 
   // hide the winner banner
   $('#winner-display').css('display', 'none');
+
+  // wipe the old and create a new data board
   createDataBoard(rows, columns);
 });
+
+// remove for loops in checkWinner {
+  // a function to get a column and one to get a row
+// }
+// remove the need for global variables {
+  // Add Linzi style check whos go it is (flatten board and count r's and y's to get totals)
+  // Add function to get the board from the html {
+    // initially set the screen board not the data board
+  // }
+// }
+// Add colour changing option

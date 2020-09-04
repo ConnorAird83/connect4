@@ -19,13 +19,33 @@
       <input class="input" id="num-columns" type="text" name="num-columns" />
     </div>
     <button id="draw-board">Change board</button>
-    <p id="winner-display">The winner is <span id="winner-name"></span></p>
-    <p id="Player_win_count">Player 1:<span id="winner-count1"></span> Player 2:<span id="winner-count2"></span></p>
 
-    <div id="game-board"></div>
+    <p id="Player_win_count">
+      <span id="red-player">
+        Red: 
+      </span>
+      <span id="red-win-count">
+        0 
+      </span>
+      <span id="yellow-player">
+        Yellow: 
+      </span>
+      <span id="yellow-win-count">
+        0
+      </span>
+    </p>
+
+    
+    <div id="game-board"><p id='winner-display'>Winner!</p></div>
+    </br>
     <button class="reset-button" id="reset-button">Reset</button>
   </div>
 
+  </br>
+
+  <footer>
+    <p>Author: C. Aird</br> <a href="mailto:connor.aird@infinityworks.com">connor.aird@infinityworks.com</a></p>
+  </footer>
 
   <script src="./connect4.js"></script>
   <script src="./joiner.js"></script>
