@@ -1,5 +1,5 @@
 function placeCounter(board, column) {
-  console.log('placeCounter was called');
+  // console.log('placeCounter was called');
   // loop over rows starting from the bottom
   for (let row = board.length - 1; row >= 0; row -= 1) {
     // if the appropriate cell is free return it's  position
@@ -11,7 +11,7 @@ function placeCounter(board, column) {
 }
 
 function cleanBoard(rows, columns) {
-  console.log('reset game was called');
+  // console.log('reset game was called');
   const rowArray = [];
   const board = [];
   for (let i = 0; i < columns; i += 1) {
@@ -20,12 +20,11 @@ function cleanBoard(rows, columns) {
   for (let j = 0; j < rows; j += 1) {
     board.push(rowArray);
   }
-  console.log(board);
   return board;
 }
 
 function checkWinner(board) {
-  console.log('checkWinner was called');
+  // console.log('checkWinner was called');
   let winner = null;
   let redCount = 0;
   let yellowCount = 0;
@@ -38,11 +37,10 @@ function checkWinner(board) {
     }
     return `${string}${column[0]}`;
   }, ''));
-
   // if a row includes a string of 4 r's or y's set winner to 'red' or 'yellow' respectively
   winner = rowStringsArray.reduce((result, row) => {
     let tempResult = null;
-    // only edit the returned value if a winner has npt yet been found
+    // only edit the returned value if a winner has not yet been found
     if (result === null) {
       // if four r's or y's are found in a row edit the returned result as appropriate
       if (row.includes('rrrr')) {
@@ -141,3 +139,10 @@ function checkWinner(board) {
   // if no winner has been encountered return null
   return null;
 }
+
+// module = module || {};
+module.exports = {
+  checkWinner,
+  cleanBoard,
+  placeCounter,
+};

@@ -13,7 +13,7 @@ let rows = 6;
 let columns = 7;
 
 function drawGrid(numberOfRows, numberOfColumns) {
-  console.log('drawGrid was called');
+  // console.log('drawGrid was called');
 
   // loop over the number of rows
   for (let i = 0; i < numberOfRows; i += 1) {
@@ -75,7 +75,7 @@ function createDataBoard(rows, columns) {
 }
 
 function columnClicked(event) {
-  console.log('columnClicked was called');
+  // console.log('columnClicked was called');
 
   // only execute if no one has won yet
   if (gameInProgress) {
