@@ -75,7 +75,14 @@ function columnClicked(event) {
     }
   } else {
     // eslint-disable-next-line no-console
-    console.log('Game is over');
+    $('#reset-button').animate({
+      height: '2.5rem',
+      width: '12rem',
+    });
+    $('#reset-button').animate({
+      height: '2rem',
+      width: '10rem',
+    });
   }
 }
 

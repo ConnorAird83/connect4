@@ -1,7 +1,13 @@
+/* eslint-disable no-undef */
 const each = require('jest-each').default;
-const { checkWinner, cleanBoard, placeCounter, getCurrentPlayer } = require('../source/connect4.js');
+const {
+  checkWinner,
+  cleanBoard,
+  placeCounter,
+  getCurrentPlayer,
+} = require('../source/connect4.js');
 
-describe ('test placeCounter', () => {
+describe('test placeCounter', () => {
   // Arrange
   each([
     [
@@ -60,7 +66,7 @@ describe ('test placeCounter', () => {
   });
 });
 
-describe ('test checkWinner', () => {
+describe('test checkWinner', () => {
   // Arrange
   each([
     [
@@ -126,7 +132,7 @@ describe ('test checkWinner', () => {
   });
 });
 
-describe ('test cleanBoard', () => {
+describe('test cleanBoard', () => {
   // Arrange
   each([
     [
@@ -175,7 +181,7 @@ describe ('test cleanBoard', () => {
   });
 });
 
-describe ('test getCurrentPlayer', () => {
+describe('test getCurrentPlayer', () => {
   // Arrange
   each([
     [
