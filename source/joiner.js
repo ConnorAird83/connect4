@@ -1,7 +1,5 @@
 /* eslint-disable no-use-before-define */
 function drawGrid(numberOfRows, numberOfColumns) {
-  // console.log('drawGrid was called');
-
   // loop over the number of rows
   for (let i = 0; i < numberOfRows; i += 1) {
     // add a row div to the existing game board
@@ -35,7 +33,6 @@ function updateScreenBoard(row, column, player) {
 function columnClicked(event) {
   const board = getBoard();
 
-  // console.log('columnClicked was called');
   // eslint-disable-next-line no-undef
   const player = getCurrentPlayer(board);
 
@@ -52,9 +49,8 @@ function columnClicked(event) {
 
     // if a counter can be placed
     if (row !== null) {
-      // update the screen and data board
+      // update the screen
       updateScreenBoard(row, column, player);
-      // updateDataBoard(row, column, player, board);
       const newBoard = getBoard();
 
       // check for a winner
@@ -84,7 +80,6 @@ function columnClicked(event) {
 }
 
 function mouseOn(event) {
-  // console.log('mouseOn was called');
   const board = getBoard();
 
   // eslint-disable-next-line no-undef
@@ -106,7 +101,6 @@ function mouseOn(event) {
 }
 
 function mouseOff(event) {
-  // console.log('mouseOff was called');
   const board = getBoard();
 
   // find the current column
@@ -137,7 +131,6 @@ function setupListeners() {
 
 function createBoards(rows, columns) {
   drawGrid(rows, columns);
-  // createDataBoard(rows, columns);
   setupListeners();
 }
 
@@ -181,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rows = $('#num-rows').val();
     const columns = $('#num-columns').val();
 
-    // create user defined boards
+    // create user defined board
     createBoards(rows, columns);
   });
 });
@@ -196,12 +189,4 @@ $('#reset-button').click(() => {
 
   // hide the winner banner
   $('#winner-display').css('display', 'none');
-
-  // wipe the old and create a new data board
-  // createDataBoard(rows, columns);
 });
-
-// remove for loops in checkWinner {
-//  a function to get a column and one to get a row
-// }
-// Add colour changing option
