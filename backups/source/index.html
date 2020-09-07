@@ -1,0 +1,54 @@
+<!doctype html>
+
+<html>
+  
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="main.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="flex-container">
+    <h1 class="banner jumbotron">Connect 4</h1>
+    <div id="inputs">
+      <p>Rows: </p>
+      <input class="input" id="num-rows" type="text" name="num-rows" />
+      <p> Columns: </p>
+      <input class="input" id="num-columns" type="text" name="num-columns" />
+    </div>
+    <button id="draw-board">Change board</button>
+
+    <p id="Player_win_count">
+      <span id="red-player">
+        Red: 
+      </span>
+      <span id="red-win-count">
+        0 
+      </span>
+      <span id="yellow-player">
+        Yellow: 
+      </span>
+      <span id="yellow-win-count">
+        0
+      </span>
+    </p>
+
+    
+    <div id="game-board"><p id='winner-display'>Winner!</p></div>
+    </br>
+    <button class="reset-button" id="reset-button">Reset</button>
+  </div>
+
+  </br>
+
+  <footer>
+    <p>Author: C. Aird</br> <a href="mailto:connor.aird@infinityworks.com">connor.aird@infinityworks.com</a></p>
+  </footer>
+
+  <script src="./connect4.js"></script>
+  <script src="./joiner.js"></script>
+</body>
+
+</html>
