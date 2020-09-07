@@ -9,7 +9,6 @@ let board = [
   [null, null, null, null, null, null, null],
   [null, null, null, null, null, null, null],
 ];
-let gameInProgress = true;
 let rows = 6;
 let columns = 7;
 let redWins = 0;
@@ -75,8 +74,10 @@ function columnClicked(event) {
   // console.log('columnClicked was called');
   const player = getCurrentPlayer(board);
 
+  const winnerColor = $('#winner-display');
+
   // only execute if no one has won yet
-  if (gameInProgress) {
+  if (winnerColor.css('color') === 'rgb(0, 0, 0)') {
     // gets the id of the lowest child (target) in the mouse click event
     const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
@@ -93,7 +94,7 @@ function columnClicked(event) {
       const winner = checkWinner(board);
       if (winner !== null) {
         // prevent further coin placing
-        gameInProgress = false;
+        // gameInProgress = false;
 
         // stop indicating a players turn
         $(`#${player}-player`).css('color', 'black');
@@ -163,12 +164,13 @@ function createBoards(rows, columns) {
 
 document.addEventListener('DOMContentLoaded', () => {
   // create inital boards
-  createBoards(board.length, board[0].length);
+  createBoards(6, 7);
 
   // draw the circles on the window and create the board data structure
   $('#draw-board').click(() => {
     // allow the placing of more counters
-    gameInProgress = true;
+    $('#winner-display').css('color', 'black');
+    // gameInProgress = true;
 
     // delete rows, columns, circles and their listeners
     $('.row').remove();
@@ -185,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // listen for click of reset button
 $('#reset-button').click(() => {
   // allow the placing of more counters
-  gameInProgress = true;
+  $('#winner-display').css('color', 'black');
 
   // set all board circle to white
   $('.circle').css('background-color', 'white').css('opacity', 1);
