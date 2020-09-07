@@ -78,6 +78,7 @@ function checkWinner(board) {
         redCount = 0;
         winner = 'yellow';
       } else {
+        // eslint-disable-next-line no-console
         console.log(`Incorrect variable in board at (${row}, ${column})`);
       }
     }
@@ -145,6 +146,7 @@ function getCurrentPlayer(board) {
 
   const counters = flatBoard.reduce((acc, cell) => {
     if (cell !== null) {
+      // eslint-disable-next-line no-param-reassign
       acc += 1;
     }
     return acc;

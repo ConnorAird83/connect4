@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 function drawGrid(numberOfRows, numberOfColumns) {
   // console.log('drawGrid was called');
 
@@ -35,6 +36,7 @@ function columnClicked(event) {
   const board = getBoard();
 
   // console.log('columnClicked was called');
+  // eslint-disable-next-line no-undef
   const player = getCurrentPlayer(board);
 
   const winnerDisplay = $('#winner-display');
@@ -45,6 +47,7 @@ function columnClicked(event) {
     const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
     // check if a counter can be placed
+    // eslint-disable-next-line no-undef
     const row = placeCounter(board, column);
 
     // if a counter can be placed
@@ -55,6 +58,7 @@ function columnClicked(event) {
       const newBoard = getBoard();
 
       // check for a winner
+      // eslint-disable-next-line no-undef
       const winner = checkWinner(newBoard);
       if (winner !== null) {
         // stop indicating a players turn
@@ -74,6 +78,7 @@ function columnClicked(event) {
       }
     }
   } else {
+    // eslint-disable-next-line no-console
     console.log('Game is over');
   }
 }
@@ -82,10 +87,12 @@ function mouseOn(event) {
   // console.log('mouseOn was called');
   const board = getBoard();
 
+  // eslint-disable-next-line no-undef
   const player = getCurrentPlayer(board);
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
   // find the first row with a free space
+  // eslint-disable-next-line no-undef
   const row = placeCounter(board, column);
 
   // change the colour of that circle to pastille version of the colours
@@ -105,6 +112,7 @@ function mouseOff(event) {
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
   // find the first row with a free space
+  // eslint-disable-next-line no-undef
   const row = placeCounter(board, column);
 
   // change the colour of that circle to pastille version of the colours
@@ -170,8 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.row').remove();
 
     // get rows and columns from user input
-    rows = $('#num-rows').val();
-    columns = $('#num-columns').val();
+    const rows = $('#num-rows').val();
+    const columns = $('#num-columns').val();
 
     // create user defined boards
     createBoards(rows, columns);
@@ -194,12 +202,6 @@ $('#reset-button').click(() => {
 });
 
 // remove for loops in checkWinner {
-  // a function to get a column and one to get a row
-// }
-// remove the need for global variables {
-  // Add Linzi style check whos go it is (flatten board and count r's and y's to get totals)
-  // Add function to get the board from the html {
-    // initially set the screen board not the data board
-  // }
+//  a function to get a column and one to get a row
 // }
 // Add colour changing option
