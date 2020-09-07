@@ -75,7 +75,7 @@ body {
 }
 
 #winner-display {
-    display: block;
+    display: none;
     font-weight: bold;
     position: absolute;
     color: black;
@@ -103,7 +103,6 @@ body {
         font-size: 6.5rem;
         margin-top: 7.5rem;
         margin-left: 0rem;
-        /* margin-right: 0rem; */
         width: 80%;
     }
     #game-board {
