@@ -54,8 +54,9 @@ function columnClicked(event) {
       const newBoard = getBoard();
 
       // check for a winner
+      const target = $('h1').text().substring(8);
       // eslint-disable-next-line no-undef
-      const winner = checkWinner(newBoard);
+      const winner = checkWinner(newBoard, target);
       if (winner !== null) {
         // stop indicating a players turn
         $(`#${player}-player`).css('color', 'black');
@@ -177,9 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // delete rows, columns, circles and their listeners
     $('.row').remove();
 
-    // get rows and columns from user input
+    // get user input
     const rows = $('#num-rows').val();
     const columns = $('#num-columns').val();
+    const target = $('#target-length').val();
+    $('#title').text(`Connect ${target}`);
 
     // create user defined board
     createBoards(rows, columns);

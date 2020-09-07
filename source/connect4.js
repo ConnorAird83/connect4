@@ -22,11 +22,18 @@ function cleanBoard(rows, columns) {
   return board;
 }
 
-function checkWinner(board) {
+function checkWinner(board, target) {
   // console.log('checkWinner was called');
   let winner = null;
   let redCount = 0;
   let yellowCount = 0;
+  let redString = '';
+  let yellowString = '';
+
+  for (let i = 0; i < target; i += 1) {
+    redString += 'r';
+    yellowString += 'y';
+  }
 
   /* check for row win */
   // fills an array with a string of the first letters of each element in each row (r, y or n)
@@ -42,9 +49,9 @@ function checkWinner(board) {
     // only edit the returned value if a winner has not yet been found
     if (result === null) {
       // if four r's or y's are found in a row edit the returned result as appropriate
-      if (row.includes('rrrr')) {
+      if (row.includes(redString)) {
         tempResult = 'red';
-      } else if (row.includes('yyyy')) {
+      } else if (row.includes(yellowString)) {
         tempResult = 'yellow';
       }
       return tempResult;
@@ -62,7 +69,7 @@ function checkWinner(board) {
   for (let column = 0; column < board[0].length; column += 1) {
     // loop over rows (bottom to top)
     for (let row = board.length - 1; row >= 0; row -= 1) {
-      if (redCount >= 4 || yellowCount >= 4) {
+      if (redCount >= target || yellowCount >= target) {
         return winner;
       // eslint-disable-next-line no-else-return
       } else if (board[row][column] === null) {
@@ -83,7 +90,7 @@ function checkWinner(board) {
       }
     }
     // check for 4 or more in row
-    if (redCount >= 4 || yellowCount >= 4) {
+    if (redCount >= target || yellowCount >= target) {
       return winner;
     // eslint-disable-next-line no-else-return
     } else {
@@ -96,31 +103,31 @@ function checkWinner(board) {
 
   /* Check for diagonal wins */
   // loop over rows
-  for (let row = 0; row < board.length - 3; row += 1) {
+  for (let row = 0; row < board.length - target + 1; row += 1) {
     let leftCounter = 0;
     let rightCounter = board[0].length - 1;
     // loop over columns
-    for (let column = 0; column < board[0].length - 3; column += 1) {
+    for (let column = 0; column < board[0].length - target + 1; column += 1) {
       // console.log("row = "+row+" leftCounter = "+leftCounter+" rightCounter = "+rightCounter)
       // if a colour is encountered
       if (board[row][leftCounter] !== null) {
         winner = board[row][leftCounter];
-        // if there is four in a diagonal down to the right return the winner
-        if (
-          (board[row][leftCounter] === board[row + 1][leftCounter + 1])
-          && (board[row + 1][leftCounter + 1] === board[row + 2][leftCounter + 2])
-          && (board[row + 2][leftCounter + 2] === board[row + 3][leftCounter + 3])) {
+        for (let i = 0; i < target; i += 1) {
+          // if there is target in a diagonal down to the right return the winner
+          if (board[row + i][leftCounter + i] !== board[row + i + 1][leftCounter + i + 1]) {
+            break;
+          }
           return winner;
         }
       }
       // if a colour is encountered
       if (board[row][rightCounter] !== null) {
         winner = board[row][rightCounter];
-        // if there is four in a diagonal down to the left return the winner
-        if (
-          (board[row][rightCounter] === board[row + 1][rightCounter - 1])
-          && (board[row + 1][rightCounter - 1] === board[row + 2][rightCounter - 2])
-          && (board[row + 2][rightCounter - 2] === board[row + 3][rightCounter - 3])) {
+        for (let i = 0; i < target; i += 1) {
+          // if there is target in a diagonal down to the left return the winner
+          if (board[row + i][leftCounter - i] !== board[row - i - 1][leftCounter - i - 1]) {
+            break;
+          }
           return winner;
         }
       }

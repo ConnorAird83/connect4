@@ -43,7 +43,6 @@ body {
     display: flex;
     flex-direction: column;
     width: 80%;
-    height: 70%;
     height: 30rem;
     background-color: blue;
     border-width: 0.2rem;
@@ -51,21 +50,6 @@ body {
     border-style: solid;
     border-radius: 4%;
 }
-
-@media (min-width: 800px) {
-    #game-board {
-        width: 40rem;
-    }
-}
-
-/* @media (max-width: 800px) {
-    #winner-display {
-        writing-mode: vertical-rl;
-        margin-bottom: 10rem;
-        margin-left: 10%;
-        margin-right: 10%;
-    }
-} */
 
 .flex-container {
     display: flex;
@@ -84,14 +68,14 @@ body {
 }
 
 #inputs {
-    width: 30%;
+    width: 20rem;
     display: flex;
     justify-items: center;
     justify-content: space-around;
 }
 
 #winner-display {
-    display: none;
+    display: block;
     font-weight: bold;
     position: absolute;
     color: black;
@@ -99,4 +83,56 @@ body {
     margin-top: 9rem;
     margin-left: 5.5rem;
     opacity: 1;
+}
+
+@media (min-width: 740px) {
+    #game-board {
+        width: 37rem;
+    }
+}
+
+@media (max-width: 780px) {
+    #winner-display {
+        margin-left: 0rem;
+        width: 80%
+    }
+}
+
+@media (max-width: 600px) {
+    #winner-display {
+        font-size: 6.5rem;
+        margin-top: 7.5rem;
+        margin-left: 0rem;
+        /* margin-right: 0rem; */
+        width: 80%;
+    }
+    #game-board {
+        height: 25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #winner-display {
+        margin-top: 9rem;
+        font-size: 4rem;
+    }
+}
+
+@media (max-width: 320px) {
+    #title {
+        font-size: 1.5rem;
+    }
+    #inputs {
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+    }
+    #game-board {
+        height: 18rem;
+    }
+    #winner-display {
+        margin-top: 1.5rem;
+        width: 65%;
+        writing-mode: vertical-rl;
+    }
 }
