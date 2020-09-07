@@ -1,19 +1,3 @@
-// const { getCurrentPlayer } = require("./connect4");
-
-// Initialise game variables
-let board = [
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null],
-];
-let rows = 6;
-let columns = 7;
-let redWins = 0;
-let yellowWins = 0;
-
 function drawGrid(numberOfRows, numberOfColumns) {
   // console.log('drawGrid was called');
 
@@ -37,47 +21,26 @@ function drawGrid(numberOfRows, numberOfColumns) {
   }
 }
 
-function updateDataBoard(row, column, player) {
-  board[row][column] = player;
-}
-
 function updateScreenBoard(row, column, player) {
-
   $(`#circle-row-${row}-column-${column}`).css('background-color', player).css('opacity', 1);
+  // move indicative circle up one
   if (player === 'red') {
-    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'yellow').css('opacity', 0.8);
+    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
   } else {
-    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'red').css('opacity', 0.8);
-  }
-}
-
-function createDataBoard(rows, columns) {
-  // clear the data board
-  board = [];
-
-  // loop through rows
-  for (let i = 0; i < rows; i += 1) {
-    // create new row array
-    const rowArray = [];
-
-    // loop through columns
-    for (let j = 0; j < columns; j += 1) {
-      // add columns as nulls into the newly created row
-      rowArray.push(null);
-    }
-    // add the complete row into the data board
-    board.push(rowArray);
+    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 0, 10)').css('opacity', 0.8);
   }
 }
 
 function columnClicked(event) {
+  const board = getBoard();
+
   // console.log('columnClicked was called');
   const player = getCurrentPlayer(board);
 
-  const winnerColor = $('#winner-display');
+  const winnerDisplay = $('#winner-display');
 
   // only execute if no one has won yet
-  if (winnerColor.css('color') === 'rgb(0, 0, 0)') {
+  if (winnerDisplay.css('color') === 'rgb(0, 0, 0)') {
     // gets the id of the lowest child (target) in the mouse click event
     const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
@@ -88,14 +51,12 @@ function columnClicked(event) {
     if (row !== null) {
       // update the screen and data board
       updateScreenBoard(row, column, player);
-      updateDataBoard(row, column, player);
+      // updateDataBoard(row, column, player, board);
+      const newBoard = getBoard();
 
       // check for a winner
-      const winner = checkWinner(board);
+      const winner = checkWinner(newBoard);
       if (winner !== null) {
-        // prevent further coin placing
-        // gameInProgress = false;
-
         // stop indicating a players turn
         $(`#${player}-player`).css('color', 'black');
 
@@ -118,6 +79,9 @@ function columnClicked(event) {
 }
 
 function mouseOn(event) {
+  // console.log('mouseOn was called');
+  const board = getBoard();
+
   const player = getCurrentPlayer(board);
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
@@ -126,11 +90,18 @@ function mouseOn(event) {
 
   // change the colour of that circle to pastille version of the colours
   if (row !== null) {
-    $(`#circle-row-${row}-column-${column}`).css('background-color', player).css('opacity', 0.8);
+    if (player === 'red') {
+      $(`#circle-row-${row}-column-${column}`).css('background-color', 'rgb(255, 0, 10)').css('opacity', 0.8);
+    } else {
+      $(`#circle-row-${row}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
+    }
   }
 }
 
 function mouseOff(event) {
+  // console.log('mouseOff was called');
+  const board = getBoard();
+
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
   // find the first row with a free space
@@ -158,8 +129,32 @@ function setupListeners() {
 
 function createBoards(rows, columns) {
   drawGrid(rows, columns);
-  createDataBoard(rows, columns);
+  // createDataBoard(rows, columns);
   setupListeners();
+}
+
+function getBoard() {
+  const board = [];
+
+  const htmlBoard = $('#game-board').children().slice(1);
+
+  htmlBoard.each((rowIndex) => {
+    const row = [];
+    const htmlRow = $(`#${htmlBoard[rowIndex].id}`).children();
+    htmlRow.each((columnsIndex) => {
+      const cellColour = $(`#circle-${htmlRow[columnsIndex].id}`).css('background-color');
+      // determine the value which must be inputted into the cell
+      if (cellColour === 'rgb(255, 0, 0)') {
+        row.push('red');
+      } else if (cellColour === 'rgb(255, 255, 0)') {
+        row.push('yellow');
+      } else {
+        row.push(null);
+      }
+    });
+    board.push(row);
+  });
+  return board;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -170,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#draw-board').click(() => {
     // allow the placing of more counters
     $('#winner-display').css('color', 'black');
-    // gameInProgress = true;
 
     // delete rows, columns, circles and their listeners
     $('.row').remove();
@@ -196,7 +190,7 @@ $('#reset-button').click(() => {
   $('#winner-display').css('display', 'none');
 
   // wipe the old and create a new data board
-  createDataBoard(rows, columns);
+  // createDataBoard(rows, columns);
 });
 
 // remove for loops in checkWinner {

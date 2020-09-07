@@ -1,5 +1,4 @@
 function placeCounter(board, column) {
-  // console.log('placeCounter was called');
   // loop over rows starting from the bottom
   for (let row = board.length - 1; row >= 0; row -= 1) {
     // if the appropriate cell is free return it's  position
