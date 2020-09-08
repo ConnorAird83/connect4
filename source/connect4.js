@@ -62,7 +62,6 @@ function checkWinner(board, target) {
   }, null);
 
   if (winner !== null) {
-    console.log(`${winner} won horizontally with ${redString} and ${yellowString}`);
     return winner;
   }
 
@@ -72,7 +71,6 @@ function checkWinner(board, target) {
     // loop over rows (bottom to top)
     for (let row = board.length - 1; row >= 0; row -= 1) {
       if (redCount >= target || yellowCount >= target) {
-        console.log(`won vertically 1`);
         return winner;
       // eslint-disable-next-line no-else-return
       } else if (board[row][column] === null) {
@@ -94,7 +92,6 @@ function checkWinner(board, target) {
     }
     // check for 4 or more in row
     if (redCount >= target || yellowCount >= target) {
-      console.log(`won vertically 2`);
       return winner;
     // eslint-disable-next-line no-else-return
     } else {
@@ -148,7 +145,6 @@ function checkWinner(board, target) {
   /* check for nobody winning */
   // only true is every column in every row is not null
   if (board.every((row) => row.every((cell) => cell !== null))) {
-    console.log(`nobody won`);
     return 'nobody';
   }
 
