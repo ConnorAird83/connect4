@@ -31,8 +31,8 @@ function checkWinner(board, target) {
   let yellowString = '';
 
   for (let i = 0; i < target; i += 1) {
-    redString += 'r';
-    yellowString += 'y';
+    redString = `${redString}r`;
+    yellowString = `${yellowString}y`;
   }
 
   /* check for row win */
@@ -45,6 +45,7 @@ function checkWinner(board, target) {
   }, ''));
   // if a row includes a string of 4 r's or y's set winner to 'red' or 'yellow' respectively
   winner = rowStringsArray.reduce((result, row) => {
+    // console.log(result, redString);
     let tempResult = null;
     // only edit the returned value if a winner has not yet been found
     if (result === null) {
@@ -61,6 +62,7 @@ function checkWinner(board, target) {
   }, null);
 
   if (winner !== null) {
+    console.log(`${winner} won horizontally with ${redString} and ${yellowString}`);
     return winner;
   }
 
@@ -70,6 +72,7 @@ function checkWinner(board, target) {
     // loop over rows (bottom to top)
     for (let row = board.length - 1; row >= 0; row -= 1) {
       if (redCount >= target || yellowCount >= target) {
+        console.log(`won vertically 1`);
         return winner;
       // eslint-disable-next-line no-else-return
       } else if (board[row][column] === null) {
@@ -91,6 +94,7 @@ function checkWinner(board, target) {
     }
     // check for 4 or more in row
     if (redCount >= target || yellowCount >= target) {
+      console.log(`won vertically 2`);
       return winner;
     // eslint-disable-next-line no-else-return
     } else {
@@ -108,27 +112,31 @@ function checkWinner(board, target) {
     let rightCounter = board[0].length - 1;
     // loop over columns
     for (let column = 0; column < board[0].length - target + 1; column += 1) {
-      // console.log("row = "+row+" leftCounter = "+leftCounter+" rightCounter = "+rightCounter)
+      // console.log(row, column);
       // if a colour is encountered
       if (board[row][leftCounter] !== null) {
         winner = board[row][leftCounter];
         for (let i = 0; i < target; i += 1) {
+          if (i === target - 1) {
+            return winner;
+          }
           // if there is target in a diagonal down to the right return the winner
           if (board[row + i][leftCounter + i] !== board[row + i + 1][leftCounter + i + 1]) {
             break;
           }
-          return winner;
         }
       }
       // if a colour is encountered
       if (board[row][rightCounter] !== null) {
         winner = board[row][rightCounter];
         for (let i = 0; i < target; i += 1) {
+          if (i === target - 1) {
+            return winner;
+          }
           // if there is target in a diagonal down to the left return the winner
-          if (board[row + i][leftCounter - i] !== board[row - i - 1][leftCounter - i - 1]) {
+          if (board[row + i][rightCounter - i] !== board[row + i + 1][rightCounter - i - 1]) {
             break;
           }
-          return winner;
         }
       }
       // increment counters to test for diagonals to the left and right
@@ -140,6 +148,7 @@ function checkWinner(board, target) {
   /* check for nobody winning */
   // only true is every column in every row is not null
   if (board.every((row) => row.every((cell) => cell !== null))) {
+    console.log(`nobody won`);
     return 'nobody';
   }
 

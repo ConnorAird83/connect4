@@ -78,6 +78,7 @@ describe('test checkWinner', () => {
         [null, null, null, null, null, null, null],
         [null, null, null, null, null, null, null],
       ],
+      5,
       null,
     ],
     [
@@ -89,6 +90,7 @@ describe('test checkWinner', () => {
         ['red', null, null, null, null, null, null],
         ['red', null, null, null, null, null, null],
       ],
+      4,
       'red',
     ],
     [
@@ -100,6 +102,7 @@ describe('test checkWinner', () => {
         [null, 'yellow', null, null, null, null, null],
         [null, 'red', 'red', 'red', 'red', null, null],
       ],
+      4,
       'red',
     ],
     [
@@ -111,6 +114,7 @@ describe('test checkWinner', () => {
         [null, 'red', 'red', 'yellow', null, null, null],
         ['red', 'yellow', 'yellow', 'yellow', 'red', null, null],
       ],
+      4,
       'red',
     ],
     [
@@ -122,11 +126,36 @@ describe('test checkWinner', () => {
         ['yellow', 'yellow', 'red', 'red', 'yellow', 'yellow', 'red'],
         ['red', 'red', 'yellow', 'yellow', 'red', 'red', 'yellow'],
       ],
+      4,
       'nobody',
     ],
-  ]).it("When the input is '%s'", (board, expectedOutput) => {
+    [
+      [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        ['yellow', null, null, null, null, null, null],
+        ['red', null, 'red', 'red', 'yellow', null, null],
+      ],
+      4,
+      null,
+    ],
+    [
+      [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        ['yellow', null, null, null, null, null, null],
+        ['red', 'red', 'red', null, 'yellow', null, null],
+      ],
+      4,
+      null,
+    ],
+  ]).it("When the input is '%s'", (board, target, expectedOutput) => {
     // Act
-    const actualOutput = checkWinner(board);
+    const actualOutput = checkWinner(board, target);
     // Assert
     expect(actualOutput).toBe(expectedOutput);
   });
