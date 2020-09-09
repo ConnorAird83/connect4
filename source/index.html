@@ -19,20 +19,14 @@
     </div>
     <button id="draw-board">Change board</button>
 
-    <p id="Player_win_count">
-      <span id="red-player">
-        Red: 
-      </span>
-      <span id="red-win-count">
-        0 
-      </span>
-      <span id="yellow-player">
-        Yellow: 
-      </span>
-      <span id="yellow-win-count">
-        0
-      </span>
-    </p>
+    <div id="player-win-count">
+      <div class='win-circle' id='redWinCircle' style='background-color: red;'>
+        <span class='win-count' id="red-win-count">0</span>
+      </div>
+      <div class='win-circle' id='yellowWinCircle' style='background-color: yellow;'>
+        <span class='win-count' id="yellow-win-count">0</span>
+      </div>
+    </div>
 
     
     <div id="game-board"><p id='winner-display'>Winner!</p></div>

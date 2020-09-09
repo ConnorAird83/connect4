@@ -16,6 +16,25 @@
     border-style: solid;
 }
 
+.win-circle {
+    height: 80%;
+    width: 80%;
+    background-color: white;
+    border-radius: 50%;
+    border-width: 0.2rem;
+    border-color: black;
+    border-style: solid;
+}
+
+#player-win-count {
+    display: flex;
+    flex-direction: row;
+    width: 10rem;
+    height: 5rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .banner {
     color: rgb(3,81,228);
     font-weight: bold;
