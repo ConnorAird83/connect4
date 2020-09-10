@@ -36,7 +36,7 @@ function columnClicked(event) {
   $.get({
     url: '/getState',
     success: (currentState) => {
-      const player = JSON.parse(currentState).player;
+      const { player } = JSON.parse(currentState);
       const currentWinner = JSON.parse(currentState).winner;
 
       // if a winner has not been found
@@ -97,7 +97,7 @@ function mouseOn(event) {
   $.get({
     url: `${baseURL}/getState`,
     success: (currentState) => {
-      const player = JSON.parse(currentState).player;
+      const { player } = JSON.parse(currentState);
 
       // find the current column
       const column = parseInt(event.currentTarget.id.split('-')[3], 10);
