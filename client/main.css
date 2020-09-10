@@ -17,8 +17,11 @@
 }
 
 .win-circle {
-    height: 80%;
-    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 85%;
+    width: 45%;
     background-color: white;
     border-radius: 50%;
     border-width: 0.2rem;
@@ -32,7 +35,7 @@
     width: 10rem;
     height: 5rem;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .banner {

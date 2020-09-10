@@ -1,4 +1,6 @@
 /* eslint-disable no-use-before-define */
+let board = [];
+
 function drawGrid(numberOfRows, numberOfColumns) {
   // loop over the number of rows
   for (let i = 0; i < numberOfRows; i += 1) {
@@ -30,9 +32,11 @@ function updateScreenBoard(row, column, player) {
   }
 }
 
-function columnClicked(event) {
-  const board = getBoard();
+function updateDataBoard(row, column, player) {
+  board[row][column] = player;
+}
 
+function columnClicked(event) {
   // eslint-disable-next-line no-undef
   const player = getCurrentPlayer(board);
 
@@ -51,16 +55,13 @@ function columnClicked(event) {
     if (row !== null) {
       // update the screen
       updateScreenBoard(row, column, player);
-      const newBoard = getBoard();
+      updateDataBoard(row, column, player);
 
       // check for a winner
       const target = $('h1').text().substring(8);
       // eslint-disable-next-line no-undef
-      const winner = checkWinner(newBoard, target);
+      const winner = checkWinner(board, target);
       if (winner !== null) {
-        // stop indicating a players turn
-        $(`#${player}-player`).css('color', 'black');
-
         // display the winner on the screen
         $('#winner-display').css('color', winner);
         $('#winner-display').fadeIn(200);
@@ -88,8 +89,6 @@ function columnClicked(event) {
 }
 
 function mouseOn(event) {
-  const board = getBoard();
-
   // eslint-disable-next-line no-undef
   const player = getCurrentPlayer(board);
   // find the current column
@@ -109,8 +108,6 @@ function mouseOn(event) {
 }
 
 function mouseOff(event) {
-  const board = getBoard();
-
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
   // find the first row with a free space
@@ -137,9 +134,22 @@ function setupListeners() {
   });
 }
 
+function createDataBoard(rows, columns) {
+  const newBoard = [];
+  for (let i = 0; i < rows; i += 1) {
+    const newRow = [];
+    for (let j = 0; j < columns; j += 1) {
+      newRow.push(null);
+    }
+    newBoard.push(newRow);
+  }
+  return newBoard;
+}
+
 function createBoards(rows, columns) {
   drawGrid(rows, columns);
   setupListeners();
+  return createDataBoard(rows, columns);
 }
 
 function getBoard() {
@@ -168,7 +178,7 @@ function getBoard() {
 
 document.addEventListener('DOMContentLoaded', () => {
   // create inital boards
-  createBoards(6, 7);
+  board = createBoards(6, 7);
 
   // draw the circles on the window and create the board data structure
   $('#draw-board').click(() => {
@@ -185,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('#title').text(`Connect ${target}`);
 
     // create user defined board
-    createBoards(rows, columns);
+    board = createBoards(rows, columns);
   });
 });
 
@@ -195,6 +205,7 @@ $('#reset-button').click(() => {
   $('#winner-display').css('color', 'black');
 
   // set all board circle to white
+  board = cleanBoard(board);
   $('.circle').css('background-color', 'white').css('opacity', 1);
 
   // hide the winner banner

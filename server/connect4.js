@@ -9,17 +9,14 @@ function placeCounter(board, column) {
   return null;
 }
 
-function cleanBoard(rows, columns) {
-  // console.log('reset game was called');
-  const rowArray = [];
-  const board = [];
-  for (let i = 0; i < columns; i += 1) {
-    rowArray.push(null);
+function cleanBoard(board) {
+  const newBoard = board.slice();
+  for (let i = 0; i < newBoard.length; i += 1) {
+    for (let j = 0; j < newBoard[i].length; j += 1) {
+      newBoard[i][j] = null;
+    }
   }
-  for (let j = 0; j < rows; j += 1) {
-    board.push(rowArray);
-  }
-  return board;
+  return newBoard;
 }
 
 function checkWinner(board, target) {
@@ -171,10 +168,23 @@ function getCurrentPlayer(board) {
   return 'yellow';
 }
 
+function createDataBoard(rows, columns) {
+  let newBoard = [];
+  for (let i = 0; i < rows; i += 1) {
+    let newRow = [];
+    for (let j = 0; j < columns; j += 1) {
+      newRow.push(null);
+    }
+    newBoard.push(newRow);
+  }
+  return newBoard;
+}
+
 // module = module || {};
 module.exports = {
   checkWinner,
   cleanBoard,
   placeCounter,
   getCurrentPlayer,
+  createDataBoard,
 };
