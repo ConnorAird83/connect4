@@ -7,8 +7,6 @@ const {
   createDataBoard,
 } = require('./connect4.js');
 
-// const drawGrid = require('./joiner.js');
-
 const app = express();
 
 const game = {

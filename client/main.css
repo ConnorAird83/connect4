@@ -1,3 +1,8 @@
+body {
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
 .column {
     display: flex; 
     height: 100%;
@@ -29,6 +34,10 @@
     border-style: solid;
 }
 
+#title {
+    font-family: cursive;
+}
+
 #player-win-count {
     display: flex;
     flex-direction: row;
@@ -54,11 +63,6 @@
     align-items: row;
     justify-content: center;
     justify-content: space-around;
-}
-
-body {
-    text-align: center;
-    font-family: "Arial";
 }
 
 #game-board {
