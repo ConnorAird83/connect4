@@ -156,9 +156,14 @@ function checkWinner(board, target) {
   return null;
 }
 
-function getCurrentPlayer(board) {
+function getCurrentPlayer(board, starter) {
   // get 1D version of board
   const flatBoard = board.flat();
+  let otherPlayer = 'yellow';
+
+  if (starter === 'yellow') {
+    otherPlayer = 'red';
+  }
 
   const counters = flatBoard.reduce((acc, cell) => {
     if (cell !== null) {
@@ -170,9 +175,9 @@ function getCurrentPlayer(board) {
 
   // if an even number of turns have been played it is reds turn else yellows
   if (counters % 2 === 0) {
-    return 'red';
+    return starter;
   }
-  return 'yellow';
+  return otherPlayer;
 }
 
 function createDataBoard(rows, columns) {

@@ -31,64 +31,74 @@ function updateScreenBoard(row, column, player) {
   }
 }
 
+function secondaryGet(newState) {
+  // check for a winner
+  const newWinner = JSON.parse(newState).winner;
+
+  if (newWinner !== null) {
+    $.ajax({
+      type: 'POST',
+      url: `${baseURL}/swapFirstPlayer`,
+    });
+    // update each players win count
+    if (newWinner !== 'nobody') {
+      $('#winner-display').css('color', newWinner);
+      const element = $(`#${newWinner}-win-count`);
+      const currentValue = Number.parseInt(element.text(), 10);
+      element.text(currentValue + 1);
+    }
+    // display the winner on the screen
+    $('#winner-display').fadeIn(200);
+    $('#winner-display').fadeOut(1000);
+  }
+}
+
+function attemptPlace(row, column, player) {
+  // if a counter can be placed
+  if (row !== null) {
+    // update the screen
+    updateScreenBoard(row, column, player);
+
+    // get the new state
+    $.get({
+      url: `${baseURL}/getState`,
+      success: (newState) => secondaryGet(newState),
+    });
+  }
+}
+
+function initialGet(currentState, event) {
+  const { player } = JSON.parse(currentState);
+  const currentWinner = JSON.parse(currentState).winner;
+
+  // if a winner has not been found
+  if (currentWinner === null) {
+    // gets the id of the lowest child (target) in the mouse click event
+    const column = parseInt(event.currentTarget.id.split('-')[3], 10);
+
+    // check if a counter can be placed
+    $.ajax({
+      type: 'POST',
+      url: `${baseURL}/place/${column}/true`,
+      success: (row) => attemptPlace(row, column, player),
+    });
+  } else {
+    $('#reset-button').animate({
+      height: '2.5rem',
+      width: '12rem',
+    });
+    $('#reset-button').animate({
+      height: '2rem',
+      width: '10rem',
+    });
+  }
+}
+
 function columnClicked(event) {
   // get the current state
   $.get({
     url: '/getState',
-    success: (currentState) => {
-      const { player } = JSON.parse(currentState);
-      const currentWinner = JSON.parse(currentState).winner;
-
-      // if a winner has not been found
-      if (currentWinner === null) {
-        // gets the id of the lowest child (target) in the mouse click event
-        const column = parseInt(event.currentTarget.id.split('-')[3], 10);
-
-        // check if a counter can be placed
-        $.ajax({
-          type: 'POST',
-          url: `${baseURL}/place/${column}/true`,
-          success: (row) => {
-            // if a counter can be placed
-            if (row !== null) {
-              // update the screen
-              updateScreenBoard(row, column, player);
-
-              // get the new state
-              $.get({
-                url: `${baseURL}/getState`,
-                success: (newState) => {
-                  // check for a winner
-                  const newWinner = JSON.parse(newState).winner;
-
-                  if (newWinner !== null) {
-                    // update each players win count
-                    if (newWinner !== 'nobody') {
-                      $('#winner-display').css('color', newWinner);
-                      const element = $(`#${newWinner}-win-count`);
-                      const currentValue = Number.parseInt(element.text(), 10);
-                      element.text(currentValue + 1);
-                    }
-                    // display the winner on the screen
-                    $('#winner-display').fadeIn(200);
-                    $('#winner-display').fadeOut(1000);
-                  }
-                },
-              });
-            }
-          },
-        });
-      } else {
-        $('#reset-button').animate({
-          height: '2.5rem',
-          width: '12rem',
-        });
-        $('#reset-button').animate({
-          height: '2rem',
-          width: '10rem',
-        });
-      }
-    },
+    success: (currentState) => initialGet(currentState, event),
   });
 }
 
@@ -154,7 +164,7 @@ function setupListeners() {
 function createBoards(rows, columns, target) {
   drawGrid(rows, columns);
   setupListeners();
-  // request to creat a new board
+  // request to create a new board
   $.ajax({
     type: 'PUT',
     url: `${baseURL}/newBoard/${rows}/${columns}/${target}`,
@@ -163,6 +173,10 @@ function createBoards(rows, columns, target) {
 
 document.addEventListener('DOMContentLoaded', () => {
   // create inital boards
+  $.ajax({
+    type: 'PUT',
+    url: `${baseURL}/beginGame`,
+  });
   createBoards(6, 7, 4);
 
   // draw the circles on the window and create the board data structure
@@ -204,3 +218,7 @@ $('#reset-button').click(() => {
   // hide the winner banner
   $('#winner-display').css('display', 'none');
 });
+
+// TO DO:
+//  swap player each game - make check player know who began
+//  prevent page refresh wiping the board state
