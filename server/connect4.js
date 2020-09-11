@@ -176,9 +176,9 @@ function getCurrentPlayer(board) {
 }
 
 function createDataBoard(rows, columns) {
-  let newBoard = [];
+  const newBoard = [];
   for (let i = 0; i < rows; i += 1) {
-    let newRow = [];
+    const newRow = [];
     for (let j = 0; j < columns; j += 1) {
       newRow.push(null);
     }
