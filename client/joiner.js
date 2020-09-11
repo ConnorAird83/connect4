@@ -174,9 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.row').remove();
 
     // get user input
-    let rowInput = $('#num-rows').val();
-    let columnInput = $('#num-columns').val();
-    let targetInput = $('#target-length').val();
+    const rowInput = $('#num-rows').val();
+    const columnInput = $('#num-columns').val();
+    const targetInput = $('#target-length').val();
+    // if input has been provided change values
     const rows = (rowInput === '') ? 6 : rowInput;
     const columns = (columnInput === '') ? 7 : columnInput;
     const target = (targetInput === '') ? 4 : targetInput;

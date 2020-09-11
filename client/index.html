@@ -10,36 +10,37 @@
 </head>
 
 <body>
-  <div class="flex-container">
-    <h1 class="banner jumbotron" id="title">Connect 4</h1>
-    <div id="inputs">
-      <p>Rows: <input class="input" id="num-rows" type="text" name="num-rows" /></p>
-      <p> Columns: <input class="input" id="num-columns" type="text" name="num-columns" /></p>
-      <p>Target Length: <input class="input" id="target-length" type="text" name="target-length" /></p>
-    </div>
-    <button id="draw-board">Change board</button>
-
-    <div id="player-win-count">
-      <div class='win-circle' id='redWinCircle' style='background-color: red;'>
-        <span class='win-count' id="red-win-count">0</span>
+  <div class="bg">
+    <div class="flex-container">
+      <h1 class="banner jumbotron" id="title">Connect 4</h1>
+      <div id="inputs">
+        <p>Rows: <input class="input" id="num-rows" type="text" name="num-rows" /></p>
+        <p> Columns: <input class="input" id="num-columns" type="text" name="num-columns" /></p>
+        <p>Target Length: <input class="input" id="target-length" type="text" name="target-length" /></p>
       </div>
-      <div class='win-circle' id='yellowWinCircle' style='background-color: yellow;'>
-        <span class='win-count' id="yellow-win-count">0</span>
+      <button id="draw-board">Change board</button>
+
+      <div id="player-win-count">
+        <div class='win-circle' id='redWinCircle' style='background-color: red;'>
+          <span class='win-count' id="red-win-count">0</span>
+        </div>
+        <div class='win-circle' id='yellowWinCircle' style='background-color: yellow;'>
+          <span class='win-count' id="yellow-win-count">0</span>
+        </div>
       </div>
+
+      
+      <div id="game-board"><p id='winner-display'>Winner!</p></div>
+      </br>
+      <button class="reset-button" id="reset-button">Reset</button>
     </div>
 
-    
-    <div id="game-board"><p id='winner-display'>Winner!</p></div>
     </br>
-    <button class="reset-button" id="reset-button">Reset</button>
+
+    <footer>
+      <p id="footer">Author: C. Aird</br> <a href="mailto:connor.aird@infinityworks.com">connor.aird@infinityworks.com</a></p>
+    </footer>
   </div>
-
-  </br>
-
-  <footer>
-    <p id="footer">Author: C. Aird</br> <a href="mailto:connor.aird@infinityworks.com">connor.aird@infinityworks.com</a></p>
-  </footer>
-
   <script src="./joiner.js"></script>
 </body>
 
