@@ -174,9 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.row').remove();
 
     // get user input
-    const rows = $('#num-rows').val();
-    const columns = $('#num-columns').val();
-    const target = $('#target-length').val();
+    let rowInput = $('#num-rows').val();
+    let columnInput = $('#num-columns').val();
+    let targetInput = $('#target-length').val();
+    const rows = (rowInput === '') ? 6 : rowInput;
+    const columns = (columnInput === '') ? 7 : columnInput;
+    const target = (targetInput === '') ? 4 : targetInput;
     $('#title').text(`Connect ${target}`);
 
     // create user defined board
