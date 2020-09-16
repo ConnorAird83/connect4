@@ -52,13 +52,13 @@ app.put('/newBoard/:rows/:columns/:target', (req, res) => {
   // store the new data board
   game.board = createDataBoard(rows, columns);
   game.target = newTarget;
-  res.send('New board stored');
+  res.send(game.board);
 });
 
 // get the current player
 app.get('/currentPlayer', (req, res) => {
   const player = getCurrentPlayer(game.board, game.firstPlayer);
-  res.send(player);
+  res.send([player]);
 });
 
 // swap the starting player

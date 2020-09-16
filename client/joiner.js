@@ -118,31 +118,29 @@ async function columnClicked(event) {
   }
 }
 
-function mouseOn(event) {
+async function mouseOn(event) {
   // get the current state
-  $.get({
-    url: `${baseURL}/currentPlayer`,
-    success: (player) => {
-      // find the current column
-      const column = parseInt(event.currentTarget.id.split('-')[3], 10);
+  const player = await fetch(`${baseURL}/currentPlayer`)
+    .then((response) => response.json())
+    .then((data) => data[0]);
 
-      // find the first row with a free space and update the screen
-      $.ajax({
-        type: 'POST',
-        url: `${baseURL}/place/${column}/false`,
-        success: (row) => {
-          // change the colour of that circle to pastille version of the colours
-          if (row !== null) {
-            if (player === 'red') {
-              $(`#circle-row-${row}-column-${column}`).css('background-color', 'rgb(255, 0, 10)').css('opacity', 0.8);
-            } else {
-              $(`#circle-row-${row}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
-            }
-          }
-        },
-      });
-    },
-  });
+  // find the current column
+  const column = parseInt(event.currentTarget.id.split('-')[3], 10);
+
+  // find the first row with a free space and update the screen
+  fetch(`${baseURL}/place/${column}/false`, {
+    method: 'POST',
+  }).then((response) => response.json())
+    .then((row) => {
+      // change the colour of that circle to pastille version of the colours
+      if (row !== null) {
+        if (player === 'red') {
+          $(`#circle-row-${row}-column-${column}`).css('background-color', 'rgb(255, 0, 10)').css('opacity', 0.8);
+        } else {
+          $(`#circle-row-${row}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
+        }
+      }
+    });
 }
 
 function mouseOff(event) {
@@ -182,7 +180,7 @@ function createBoards(board) {
 }
 
 function startGame(gameState) {
-  createBoards(gameState.board, gameState.target);
+  createBoards(gameState.board);
   // set win counts
   const redWins = $('#red-win-count');
   const yellowWins = $('#yellow-win-count');
@@ -192,21 +190,12 @@ function startGame(gameState) {
 
 document.addEventListener('DOMContentLoaded', () => {
   // create inital boards
-  $.ajax({
-    type: 'PUT',
-    url: `${baseURL}/beginGame`,
-    success: (gameState) => {
+  fetch(`${baseURL}/beginGame`, {
+    method: 'PUT',
+  }).then((response) => response.json())
+    .then((gameState) => {
       startGame(gameState);
-    },
-  });
-  // {
-  //   "rows": ${rows},
-  //   "columns": ${columns},
-  //   "target": ${game.target},
-  //   "redWins": ${game.redScore},
-  //   "yellowWins": ${game.yellowScore},
-  //   "firstPlayer": ${game.firstPlayer},
-  // }
+    });
 
   // draw the circles on the window and create the board data structure
   $('#draw-board').click(() => {
@@ -226,16 +215,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const target = (targetInput === '') ? 4 : targetInput;
     $('#title').text(`Connect ${target}`);
 
-    // create user defined board
-    createBoards(rows, columns, target);
     // request to create a new board
-    $.ajax({
-      type: 'PUT',
-      url: `${baseURL}/newBoard/${rows}/${columns}/${target}`,
-      success: () => {
-        console.log('created new board');
-      },
-    });
+    fetch(`${baseURL}/newBoard/${rows}/${columns}/${target}`, {
+      method: 'PUT',
+    }).then((response) => response.json())
+      .then((board) => {
+        console.log(board);
+        createBoards(board);
+      });
   });
 });
 
