@@ -36,12 +36,8 @@ function updateScreenBoard(row, column, player) {
   }
 }
 
-function secondaryGet(winner, state) {
-  // swap the first player
-  $.ajax({
-    type: 'POST',
-    url: `${baseURL}/swapFirstPlayer`,
-  });
+function updateWinCounts(winner, state) {
+  console.log(winner);
   // update each players win count
   if (winner !== 'nobody') {
     $('#winner-display').css('color', winner);
@@ -55,63 +51,71 @@ function secondaryGet(winner, state) {
   $('#winner-display').fadeOut(1000);
 }
 
-function attemptPlace(state, row, column) {
-  const player = state.player;
+async function placeCounter(state, row, column) {
+  const { player } = state;
 
   // update the screen
   updateScreenBoard(row, column, player);
 
-  // get the new state
-  $.get({
-    url: `${baseURL}/winner`,
-    success: (winnerArray) => {
-      const winner = winnerArray[0];
-      if (winner !== null) {
-        secondaryGet(winner, state);
-      }
-    },
-  });
+  // get the new winner
+  const winner = await fetch(`${baseURL}/winner`)
+    .then((response) => response.json())
+    .then((winArray) => winArray[0]);
+
+  return winner;
 }
 
-function initialGet(state, column) {
-  // check if a counter can be placed
-  $.ajax({
-    type: 'POST',
-    url: `${baseURL}/place/${column}/true`,
-    success: (row) => {
-      if (row !== null) {
-        attemptPlace(state, row, column);
-      }
-    },
-  });
+async function getEmptyRow(state, column) {
+  const row = await fetch(`${baseURL}/place/${column}/true`, {
+    method: 'POST',
+  }).then((response) => response.json());
+
+  return row;
 }
 
-function columnClicked(event) {
+async function columnClicked(event) {
   // gets the id of the lowest child (target) in the mouse click event
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
   // get the current state
-  $.get({
-    url: '/getState',
-    success: (currentState) => {
-      const state = JSON.parse(currentState);
-      const winner = state.winner;
+  const currentState = await fetch(`${baseURL}/getState`)
+    .then((response) => response.json());
 
-      // if a winner hasn't been found yet
-      if (winner === null) {
-        initialGet(state, column);
-      } else {
-        $('#reset-button').animate({
-          height: '2.5rem',
-          width: '12rem',
-        });
-        $('#reset-button').animate({
-          height: '2rem',
-          width: '10rem',
-        });
-      }
-    },
-  });
+  const firstWinner = currentState.winner;
+
+  // if no winner has been found yet
+  if (firstWinner === null) {
+    // test if a counter can be placed in this column
+    getEmptyRow(currentState, column)
+      .then((row) => {
+        // if one can be placed, do so and check for a winner
+        if (row !== null) {
+          return placeCounter(currentState, row, column);
+        }
+        return null;
+      })
+      .then((winner) => {
+        // if a winner has now been found, swap the first player and update the win counts
+        if (winner !== null) {
+          // get the new game state
+          fetch(`${baseURL}/getState`)
+            .then((response) => response.json())
+            .then((newState) => {
+              console.log(newState);
+              updateWinCounts(winner, newState);
+            });
+        }
+      });
+  } else {
+    $('#reset-button').animate({
+      height: '2.5rem',
+      width: '12rem',
+    });
+    $('#reset-button').animate({
+      height: '2rem',
+      width: '10rem',
+    });
+  }
 }
 
 function mouseOn(event) {
@@ -251,7 +255,3 @@ $('#reset-button').click(() => {
   // hide the winner banner
   $('#winner-display').css('display', 'none');
 });
-
-// TO DO:
-//  swap player each game - make check player know who began
-//  prevent page refresh wiping the board state

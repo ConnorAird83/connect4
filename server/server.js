@@ -61,15 +61,32 @@ app.get('/currentPlayer', (req, res) => {
   res.send(player);
 });
 
+// swap the starting player
+function swapFirstPlayer() {
+  if (game.firstPlayer === 'red') {
+    game.firstPlayer = 'yellow';
+  } else {
+    game.firstPlayer = 'red';
+  }
+}
+
 // get the winner
 app.get('/winner', (req, res) => {
   const winner = checkWinner(game.board, game.target);
+  if (winner !== null) {
+    swapFirstPlayer();
+    // update win count
+    if (winner === 'red') {
+      game.redScore += 1;
+    } else if (winner === 'yellow') {
+      game.yellowScore += 1;
+    }
+  }
   res.send([winner]);
 });
 
 // request to get the current state of the board
 app.get('/getState', (req, res) => {
-  console.log('getState was called');
   const player = getCurrentPlayer(game.board, game.firstPlayer);
   const winner = checkWinner(game.board, game.target);
 
