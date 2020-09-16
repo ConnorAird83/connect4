@@ -147,16 +147,15 @@ function mouseOff(event) {
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
   // find the first row with a free space
-  $.ajax({
-    type: 'POST',
-    url: `${baseURL}/place/${column}/false`,
-    success: (row) => {
+  fetch(`${baseURL}/place/${column}/false`, {
+    method: 'POST',
+  }).then((response) => response.json())
+    .then((row) => {
       // change the colour of that circle back to white
       if (row !== null) {
         $(`#circle-row-${row}-column-${column}`).css('background-color', 'white').css('opacity', 1);
       }
-    },
-  });
+    });
 }
 
 function setupListeners() {
@@ -235,10 +234,6 @@ $('#reset-button').click(() => {
   fetch(`${baseURL}/reset`, {
     method: 'PUT',
   });
-  // $.ajax({
-  //   type: 'PUT',
-  //   url: `${baseURL}/reset`,
-  // });
 
   $('.circle').css('background-color', 'white').css('opacity', 1);
 
