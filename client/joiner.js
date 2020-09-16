@@ -1,6 +1,8 @@
 const baseURL = 'http://localhost:8080';
 
-function drawGrid(numberOfRows, numberOfColumns) {
+function drawGrid(board) {
+  const numberOfRows = board.length;
+  const numberOfColumns = board[0].length;
   // loop over the number of rows
   for (let i = 0; i < numberOfRows; i += 1) {
     // add a row div to the existing game board
@@ -11,8 +13,11 @@ function drawGrid(numberOfRows, numberOfColumns) {
       // add a column div into the newly created row div
       $(`#row-${i}`).append(`<div class="column" id="row-${i}-column-${j}"></div>`);
 
-      // add a circle div into the newly created column div
+      // add a circle div into the newly created column div and set its colour
       $(`#row-${i}-column-${j}`).append(`<div class='circle' id='circle-row-${i}-column-${j}'></div>`);
+      if (board[i][j] !== null) {
+        $(`#circle-row-${i}-column-${j}`).css('background-color', board[i][j]);
+      }
 
       // set the size of the columns and circles to fit the game board
       const columnWidth = 100 / numberOfColumns;
@@ -31,84 +36,89 @@ function updateScreenBoard(row, column, player) {
   }
 }
 
-function secondaryGet(newState) {
-  // check for a winner
-  const newWinner = JSON.parse(newState).winner;
-
-  if (newWinner !== null) {
-    $.ajax({
-      type: 'POST',
-      url: `${baseURL}/swapFirstPlayer`,
-    });
-    // update each players win count
-    if (newWinner !== 'nobody') {
-      $('#winner-display').css('color', newWinner);
-      const element = $(`#${newWinner}-win-count`);
-      const currentValue = Number.parseInt(element.text(), 10);
-      element.text(currentValue + 1);
-    }
-    // display the winner on the screen
-    $('#winner-display').fadeIn(200);
-    $('#winner-display').fadeOut(1000);
+function secondaryGet(winner, state) {
+  // swap the first player
+  $.ajax({
+    type: 'POST',
+    url: `${baseURL}/swapFirstPlayer`,
+  });
+  // update each players win count
+  if (winner !== 'nobody') {
+    $('#winner-display').css('color', winner);
+    const element = $(`#${winner}-win-count`);
+    const currentValue = state[`${winner}Score`];
+    console.log(currentValue);
+    element.text(currentValue);
   }
+  // display the winner on the screen
+  $('#winner-display').fadeIn(200);
+  $('#winner-display').fadeOut(1000);
 }
 
-function attemptPlace(row, column, player) {
-  // if a counter can be placed
-  if (row !== null) {
-    // update the screen
-    updateScreenBoard(row, column, player);
+function attemptPlace(state, row, column) {
+  const player = state.player;
 
-    // get the new state
-    $.get({
-      url: `${baseURL}/getState`,
-      success: (newState) => secondaryGet(newState),
-    });
-  }
+  // update the screen
+  updateScreenBoard(row, column, player);
+
+  // get the new state
+  $.get({
+    url: `${baseURL}/winner`,
+    success: (winnerArray) => {
+      const winner = winnerArray[0];
+      if (winner !== null) {
+        secondaryGet(winner, state);
+      }
+    },
+  });
 }
 
-function initialGet(currentState, event) {
-  const { player } = JSON.parse(currentState);
-  const currentWinner = JSON.parse(currentState).winner;
-
-  // if a winner has not been found
-  if (currentWinner === null) {
-    // gets the id of the lowest child (target) in the mouse click event
-    const column = parseInt(event.currentTarget.id.split('-')[3], 10);
-
-    // check if a counter can be placed
-    $.ajax({
-      type: 'POST',
-      url: `${baseURL}/place/${column}/true`,
-      success: (row) => attemptPlace(row, column, player),
-    });
-  } else {
-    $('#reset-button').animate({
-      height: '2.5rem',
-      width: '12rem',
-    });
-    $('#reset-button').animate({
-      height: '2rem',
-      width: '10rem',
-    });
-  }
+function initialGet(state, column) {
+  // check if a counter can be placed
+  $.ajax({
+    type: 'POST',
+    url: `${baseURL}/place/${column}/true`,
+    success: (row) => {
+      if (row !== null) {
+        attemptPlace(state, row, column);
+      }
+    },
+  });
 }
 
 function columnClicked(event) {
+  // gets the id of the lowest child (target) in the mouse click event
+  const column = parseInt(event.currentTarget.id.split('-')[3], 10);
+
   // get the current state
   $.get({
     url: '/getState',
-    success: (currentState) => initialGet(currentState, event),
+    success: (currentState) => {
+      const state = JSON.parse(currentState);
+      const winner = state.winner;
+
+      // if a winner hasn't been found yet
+      if (winner === null) {
+        initialGet(state, column);
+      } else {
+        $('#reset-button').animate({
+          height: '2.5rem',
+          width: '12rem',
+        });
+        $('#reset-button').animate({
+          height: '2rem',
+          width: '10rem',
+        });
+      }
+    },
   });
 }
 
 function mouseOn(event) {
   // get the current state
   $.get({
-    url: `${baseURL}/getState`,
-    success: (currentState) => {
-      const { player } = JSON.parse(currentState);
-
+    url: `${baseURL}/currentPlayer`,
+    success: (player) => {
       // find the current column
       const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
@@ -154,21 +164,26 @@ function setupListeners() {
   // loop through these rows adding event listeners to each (inc children)
   rowArray.each((row) => {
     const cells = $(`#${rowArray[row].id}`).children();
-    cells.each((circles) => {
-      $(`#${cells[circles].id}`).click(columnClicked);
-      $(`#${cells[circles].id}`).hover(mouseOn, mouseOff);
+    cells.each((circle) => {
+      $(`#${cells[circle].id}`).click(columnClicked);
+      $(`#${cells[circle].id}`).hover(mouseOn, mouseOff);
     });
   });
 }
 
-function createBoards(rows, columns, target) {
-  drawGrid(rows, columns);
+function createBoards(board) {
+  $('.row').remove();
+  drawGrid(board);
   setupListeners();
-  // request to create a new board
-  $.ajax({
-    type: 'PUT',
-    url: `${baseURL}/newBoard/${rows}/${columns}/${target}`,
-  });
+}
+
+function startGame(gameState) {
+  createBoards(gameState.board, gameState.target);
+  // set win counts
+  const redWins = $('#red-win-count');
+  const yellowWins = $('#yellow-win-count');
+  redWins.text(gameState.redScore);
+  yellowWins.text(gameState.yellowScore);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -176,8 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
   $.ajax({
     type: 'PUT',
     url: `${baseURL}/beginGame`,
+    success: (gameState) => {
+      startGame(gameState);
+    },
   });
-  createBoards(6, 7, 4);
+  // {
+  //   "rows": ${rows},
+  //   "columns": ${columns},
+  //   "target": ${game.target},
+  //   "redWins": ${game.redScore},
+  //   "yellowWins": ${game.yellowScore},
+  //   "firstPlayer": ${game.firstPlayer},
+  // }
 
   // draw the circles on the window and create the board data structure
   $('#draw-board').click(() => {
@@ -199,6 +224,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // create user defined board
     createBoards(rows, columns, target);
+    // request to create a new board
+    $.ajax({
+      type: 'PUT',
+      url: `${baseURL}/newBoard/${rows}/${columns}/${target}`,
+      success: () => {
+        console.log('created new board');
+      },
+    });
   });
 });
 

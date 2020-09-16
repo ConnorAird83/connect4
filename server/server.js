@@ -45,35 +45,51 @@ app.put('/reset', (req, res) => {
 
 // request to draw a new grid
 app.put('/newBoard/:rows/:columns/:target', (req, res) => {
-  const { rows } = req.params;
-  const { columns } = req.params;
+  const rows = req.params.rows;
+  const columns = req.params.columns;
   const newTarget = req.params.target;
 
   // store the new data board
   game.board = createDataBoard(rows, columns);
-  res.send('New board stored');
   game.target = newTarget;
+  res.send('New board stored');
+});
+
+// get the current player
+app.get('/currentPlayer', (req, res) => {
+  const player = getCurrentPlayer(game.board, game.firstPlayer);
+  res.send(player);
+});
+
+// get the winner
+app.get('/winner', (req, res) => {
+  const winner = checkWinner(game.board, game.target);
+  res.send([winner]);
 });
 
 // request to get the current state of the board
 app.get('/getState', (req, res) => {
-  const { board } = game;
-  const { target } = game;
-
-  const winner = checkWinner(board, target);
-  const player = getCurrentPlayer(board, game.firstPlayer);
+  console.log('getState was called');
+  const player = getCurrentPlayer(game.board, game.firstPlayer);
+  const winner = checkWinner(game.board, game.target);
 
   if (winner === null) {
-    res.send(`{
-      "target": ${target},
+    res.send(`
+    {
+      "target": ${game.target},
       "winner": ${winner},
-      "player": "${player}"
+      "player": "${player}",
+      "redScore": ${game.redScore},
+      "yellowScore": ${game.yellowScore}
     }`);
   } else {
-    res.send(`{
-      "target": ${target},
+    res.send(`
+    {
+      "target": ${game.target},
       "winner": "${winner}",
-      "player": "${player}"
+      "player": "${player}",
+      "redScore": ${game.redScore},
+      "yellowScore": ${game.yellowScore}
     }`);
   }
 });
@@ -91,22 +107,14 @@ app.put('/beginGame', (rep, res) => {
   let rows = 6;
   let columns = 7;
 
-  if (game.board.length !== 0) {
+  if (game.board.length > 0) {
     rows = game.board.length;
-    if (game.board[0].length !== 0) {
-      columns = game.board[0].length;
-    }
+    columns = game.board[0].length;
+  } else {
+    game.board = createDataBoard(rows, columns);
   }
-  game.board = createDataBoard(rows, columns);
 
-  res.send(`{
-    "rows": ${rows},
-    "columns": ${columns},
-    "target": ${game.target},
-    "redWins": ${game.redScore},
-    "yellowWins": ${game.yellowScore},
-    "firstPlayer": ${game.firstPlayer},
-  }`);
+  res.send(game);
 });
 
 app.listen(8080);
