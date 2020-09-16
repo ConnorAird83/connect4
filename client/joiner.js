@@ -37,13 +37,11 @@ function updateScreenBoard(row, column, player) {
 }
 
 function updateWinCounts(winner, state) {
-  console.log(winner);
   // update each players win count
   if (winner !== 'nobody') {
     $('#winner-display').css('color', winner);
     const element = $(`#${winner}-win-count`);
     const currentValue = state[`${winner}Score`];
-    console.log(currentValue);
     element.text(currentValue);
   }
   // display the winner on the screen
@@ -101,7 +99,6 @@ async function columnClicked(event) {
           fetch(`${baseURL}/getState`)
             .then((response) => response.json())
             .then((newState) => {
-              console.log(newState);
               updateWinCounts(winner, newState);
             });
         }
@@ -219,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
       method: 'PUT',
     }).then((response) => response.json())
       .then((board) => {
-        console.log(board);
         createBoards(board);
       });
   });

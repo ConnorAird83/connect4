@@ -45,8 +45,8 @@ app.put('/reset', (req, res) => {
 
 // request to draw a new grid
 app.put('/newBoard/:rows/:columns/:target', (req, res) => {
-  const rows = req.params.rows;
-  const columns = req.params.columns;
+  const { rows } = req.params;
+  const { columns } = req.params;
   const newTarget = req.params.target;
 
   // store the new data board
