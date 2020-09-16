@@ -232,10 +232,13 @@ $('#reset-button').click(() => {
   $('#winner-display').css('color', 'black');
 
   // set all board circle to white
-  $.ajax({
-    type: 'PUT',
-    url: `${baseURL}/reset`,
+  fetch(`${baseURL}/reset`, {
+    method: 'PUT',
   });
+  // $.ajax({
+  //   type: 'PUT',
+  //   url: `${baseURL}/reset`,
+  // });
 
   $('.circle').css('background-color', 'white').css('opacity', 1);
 
