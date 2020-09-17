@@ -249,6 +249,7 @@ describe('test getCurrentPlayer', () => {
         [null, null, null, null, null, null, null],
       ],
       'red',
+      'red',
     ],
     [
       [
@@ -259,6 +260,7 @@ describe('test getCurrentPlayer', () => {
         [null, null, null, null, null, null, null],
         [null, 'red', null, null, null, null, null],
       ],
+      'red',
       'yellow',
     ],
     [
@@ -268,11 +270,12 @@ describe('test getCurrentPlayer', () => {
         [null, null, null, null, null],
         [null, null, 'red', 'yellow', null],
       ],
-      'red',
+      'yellow',
+      'yellow',
     ],
-  ]).it("When the input is '%s'", (board, expectedOutput) => {
+  ]).it("When the input is '%s'", (board, starter, expectedOutput) => {
     // Act
-    const actualOutput = getCurrentPlayer(board);
+    const actualOutput = getCurrentPlayer(board, starter);
     // Asert
     expect(actualOutput).toBe(expectedOutput);
   });

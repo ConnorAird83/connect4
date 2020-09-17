@@ -1,4 +1,5 @@
 const baseURL = 'http://localhost:8080';
+let gameId = "0";
 
 function drawGrid(board) {
   const numberOfRows = board.length;
@@ -56,7 +57,7 @@ async function placeCounter(state, row, column) {
   updateScreenBoard(row, column, player);
 
   // get the new winner
-  const winner = await fetch(`${baseURL}/winner`)
+  const winner = await fetch(`${baseURL}/winner/${gameId}`)
     .then((response) => response.json())
     .then((winArray) => winArray[0]);
 
@@ -64,7 +65,7 @@ async function placeCounter(state, row, column) {
 }
 
 async function getEmptyRow(state, column) {
-  const row = await fetch(`${baseURL}/place/${column}/true`, {
+  const row = await fetch(`${baseURL}/place/${gameId}/${column}/true`, {
     method: 'POST',
   }).then((response) => response.json());
 
@@ -76,7 +77,7 @@ async function columnClicked(event) {
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
   // get the current state
-  const currentState = await fetch(`${baseURL}/getState`)
+  const currentState = await fetch(`${baseURL}/getState/${gameId}`)
     .then((response) => response.json());
 
   const firstWinner = currentState.winner;
@@ -96,7 +97,7 @@ async function columnClicked(event) {
         // if a winner has now been found, swap the first player and update the win counts
         if (winner !== null) {
           // get the new game state
-          fetch(`${baseURL}/getState`)
+          fetch(`${baseURL}/getState/${gameId}`)
             .then((response) => response.json())
             .then((newState) => {
               updateWinCounts(winner, newState);
@@ -117,7 +118,7 @@ async function columnClicked(event) {
 
 async function mouseOn(event) {
   // get the current state
-  const player = await fetch(`${baseURL}/currentPlayer`)
+  const player = await fetch(`${baseURL}/currentPlayer/${gameId}`)
     .then((response) => response.json())
     .then((data) => data[0]);
 
@@ -125,7 +126,7 @@ async function mouseOn(event) {
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
   // find the first row with a free space and update the screen
-  fetch(`${baseURL}/place/${column}/false`, {
+  fetch(`${baseURL}/place/${gameId}/${column}/false`, {
     method: 'POST',
   }).then((response) => response.json())
     .then((row) => {
@@ -144,7 +145,7 @@ function mouseOff(event) {
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
   // find the first row with a free space
-  fetch(`${baseURL}/place/${column}/false`, {
+  fetch(`${baseURL}/place/${gameId}/${column}/false`, {
     method: 'POST',
   }).then((response) => response.json())
     .then((row) => {
@@ -185,38 +186,45 @@ function startGame(gameState) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // create inital boards
-  fetch(`${baseURL}/beginGame`, {
-    method: 'PUT',
-  }).then((response) => response.json())
-    .then((gameState) => {
-      startGame(gameState);
-    });
-
-  // draw the circles on the window and create the board data structure
-  $('#draw-board').click(() => {
-    // allow the placing of more counters
-    $('#winner-display').css('color', 'black');
-
-    // delete rows, columns, circles and their listeners
-    $('.row').remove();
-
-    // get user input
-    const rowInput = $('#num-rows').val();
-    const columnInput = $('#num-columns').val();
-    const targetInput = $('#target-length').val();
-    // if input has been provided change values
-    const rows = (rowInput === '') ? 6 : rowInput;
-    const columns = (columnInput === '') ? 7 : columnInput;
-    const target = (targetInput === '') ? 4 : targetInput;
-    $('#title').text(`Connect ${target}`);
-
-    // request to create a new board
-    fetch(`${baseURL}/newBoard/${rows}/${columns}/${target}`, {
+  // get the gameId
+  $('#id-prompt').modal({ backdrop: 'static', keyboard: false });
+  $('#submit-btn').click(() => {
+    gameId = $('#game-id').val();
+    // create inital boards
+    fetch(`${baseURL}/beginGame/${gameId}`, {
       method: 'PUT',
     }).then((response) => response.json())
-      .then((board) => {
-        createBoards(board);
+      .then((gameState) => {
+        startGame(gameState);
+      })
+      .then(() => {
+        // draw the circles on the window and create the board data structure
+        $('#draw-board').click(() => {
+          // allow the placing of more counters
+          $('#winner-display').css('color', 'black');
+
+          // delete rows, columns, circles and their listeners
+          $('.row').remove();
+
+          // get user input
+          const rowInput = $('#num-rows').val();
+          const columnInput = $('#num-columns').val();
+          const targetInput = $('#target-length').val();
+          // if input has been provided change values
+          const numberOfRows = (rowInput === '') ? 6 : rowInput;
+          const numberOfColumns = (columnInput === '') ? 7 : columnInput;
+          const targetValue = (targetInput === '') ? 4 : targetInput;
+          $('#title').text(`Connect ${targetValue}`);
+
+          // request to create a new board
+          console.log(gameId);
+          fetch(`${baseURL}/newBoard/${numberOfRows}/${numberOfColumns}/${targetValue}/${gameId}`, {
+            method: 'PUT',
+          }).then((response) => response.json())
+            .then((board) => {
+              createBoards(board);
+            });
+        });
       });
   });
 });
@@ -227,7 +235,7 @@ $('#reset-button').click(() => {
   $('#winner-display').css('color', 'black');
 
   // set all board circle to white
-  fetch(`${baseURL}/reset`, {
+  fetch(`${baseURL}/reset/${gameId}`, {
     method: 'PUT',
   });
 
