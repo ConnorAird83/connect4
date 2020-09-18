@@ -1,5 +1,5 @@
 const baseURL = 'http://localhost:8080';
-let gameId = "0";
+let gameId = '0';
 
 function drawGrid(board) {
   const numberOfRows = board.length;

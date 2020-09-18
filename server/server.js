@@ -1,5 +1,4 @@
 const express = require('express');
-const { finished } = require('stream');
 const fs = require('fs').promises;
 const {
   checkWinner,
@@ -22,16 +21,17 @@ const app = express();
 app.use(express.static('./client'));
 
 function updateDataFile(storedGames, gameInQuestion, id) {
+  const copyOfGames = { ...storedGames };
   // update the appropriate game in storedGames and then write out to the data file
-  storedGames.forEach((game) => {
-    const index = storedGames.indexOf(game);
+  copyOfGames.forEach((game) => {
+    const index = copyOfGames.indexOf(game);
     if (game.id === id) {
-      storedGames[index] = { ...gameInQuestion };
+      copyOfGames[index] = { ...gameInQuestion };
     }
   });
   fs.writeFile(
     './data/games.json',
-    JSON.stringify(storedGames),
+    JSON.stringify(copyOfGames),
     'utf-8',
   );
 }
@@ -236,8 +236,8 @@ app.put('/beginGame/:id', async (req, res) => {
   // TO DO:
   //    use data from file instead of global game state
   const { id } = req.params;
-  let rows = 6;
-  let columns = 7;
+  const rows = 6;
+  const columns = 7;
   let newGame = {};
 
   // get the stored games
