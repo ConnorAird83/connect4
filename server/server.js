@@ -51,31 +51,28 @@ async function getTheGame(id) {
 }
 
 // DONE
-function newGameState(newBoard, newTarget) {
+function newGameState(newBoard, newTarget, gameId) {
   return {
     board: newBoard.slice(),
     target: newTarget,
     firstPlayer: 'red',
     redScore: 0,
     yellowScore: 0,
-    id: (Math.random() * 10000).toPrecision(3),
+    id: gameId,
   };
 }
 
 // swap the starting player DONE
 async function swapFirstPlayer(id) {
   const storedGames = await getGames();
-  console.log(id);
   getTheGame(id)
     .then((game) => {
-      console.log(game);
       const newGame = { ...game };
       if (newGame.firstPlayer === 'red') {
         newGame.firstPlayer = 'yellow';
       } else {
         newGame.firstPlayer = 'red';
       }
-      console.log(newGame);
       return newGame;
     })
     .then((finishedGame) => {
@@ -252,7 +249,7 @@ app.put('/beginGame/:id', async (req, res) => {
   // if the game does not exist yet create one
   if (gameInQuestion.length === 0) {
     const newBoard = createDataBoard(rows, columns);
-    newGame = newGameState(newBoard, 4);
+    newGame = newGameState(newBoard, 4, id);
     storedGames.unshift(newGame);
   } else {
     newGame = gameInQuestion[0];

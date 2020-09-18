@@ -190,6 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#id-prompt').modal({ backdrop: 'static', keyboard: false });
   $('#submit-btn').click(() => {
     gameId = $('#game-id').val();
+    const idElement = $('#gameId');
+    idElement.text(gameId);
     // create inital boards
     fetch(`${baseURL}/beginGame/${gameId}`, {
       method: 'PUT',

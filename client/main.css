@@ -3,15 +3,6 @@ body {
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
-/* .bg {
-    background-image: url('https://image.freepik.com/free-photo/wooden-tabletop-tropical-paper-texture-wall-template-mock-up-display-product-business-presentation_1253-1457.jpg');
-    height: 100%;
-    width: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-} */
-
 .column {
     display: flex; 
     height: 100%;
@@ -45,6 +36,7 @@ body {
 
 #title {
     font-family: cursive;
+    margin-bottom: 0.5rem;
 }
 
 #player-win-count {
