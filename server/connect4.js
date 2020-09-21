@@ -1,3 +1,5 @@
+const fs = require('fs').promises;
+
 function placeCounter(board, column) {
   // loop over rows starting from the bottom
   for (let row = board.length - 1; row >= 0; row -= 1) {
@@ -192,6 +194,71 @@ function createDataBoard(rows, columns) {
   return newBoard;
 }
 
+function updateDataFile(storedGames, gameInQuestion, id) {
+  const copyOfGames = { ...storedGames };
+  // update the appropriate game in storedGames and then write out to the data file
+  copyOfGames.forEach((game) => {
+    const index = copyOfGames.indexOf(game);
+    if (game.id === id) {
+      copyOfGames[index] = { ...gameInQuestion };
+    }
+  });
+  fs.writeFile(
+    './data/games.json',
+    JSON.stringify(copyOfGames),
+    'utf-8',
+  );
+}
+
+// gets the existing boards from the data file
+async function getGames() {
+  try {
+    await fs.access('./data/games.json');
+
+    const output = await fs.readFile('./data/games.json', 'utf-8')
+      .then((fileData) => JSON.parse(fileData));
+
+    return output;
+  } catch (error) {
+    // if the file doesn't exist create it and return an empty array
+    await fs.writeFile(
+      './data/games.json',
+      '[]',
+      'utf-8',
+    );
+    return [];
+  }
+}
+
+function newGameState(newBoard, newTarget, gameId) {
+  return {
+    board: newBoard.slice(),
+    target: newTarget,
+    firstPlayer: 'red',
+    redScore: 0,
+    yellowScore: 0,
+    id: gameId,
+  };
+}
+
+// swap the starting player
+async function swapFirstPlayer(id) {
+  const storedGames = await getGames();
+  getTheGame(id)
+    .then((game) => {
+      const newGame = { ...game };
+      if (newGame.firstPlayer === 'red') {
+        newGame.firstPlayer = 'yellow';
+      } else {
+        newGame.firstPlayer = 'red';
+      }
+      return newGame;
+    })
+    .then((finishedGame) => {
+      updateDataFile(storedGames, finishedGame, id);
+    });
+}
+
 // module = module || {};
 module.exports = {
   checkWinner,
@@ -199,4 +266,9 @@ module.exports = {
   placeCounter,
   getCurrentPlayer,
   createDataBoard,
+  updateDataFile,
+  getGames,
+  // getTheGame,
+  newGameState,
+  swapFirstPlayer,
 };
