@@ -1,3 +1,17 @@
+body {
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+/* .bg {
+    background-image: url('https://image.freepik.com/free-photo/wooden-tabletop-tropical-paper-texture-wall-template-mock-up-display-product-business-presentation_1253-1457.jpg');
+    height: 100%;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+} */
+
 .column {
     display: flex; 
     height: 100%;
@@ -17,13 +31,20 @@
 }
 
 .win-circle {
-    height: 80%;
-    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 85%;
+    width: 45%;
     background-color: white;
     border-radius: 50%;
     border-width: 0.2rem;
     border-color: black;
     border-style: solid;
+}
+
+#title {
+    font-family: cursive;
 }
 
 #player-win-count {
@@ -32,7 +53,7 @@
     width: 10rem;
     height: 5rem;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .banner {
@@ -51,11 +72,6 @@
     align-items: row;
     justify-content: center;
     justify-content: space-around;
-}
-
-body {
-    text-align: center;
-    font-family: "Arial";
 }
 
 #game-board {
@@ -96,6 +112,7 @@ body {
 #winner-display {
     display: none;
     font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
     position: absolute;
     color: black;
     font-size: 8rem;

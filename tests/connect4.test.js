@@ -5,7 +5,7 @@ const {
   cleanBoard,
   placeCounter,
   getCurrentPlayer,
-} = require('../source/connect4.js');
+} = require('../server/connect4.js');
 
 describe('test placeCounter', () => {
   // Arrange
@@ -165,8 +165,28 @@ describe('test cleanBoard', () => {
   // Arrange
   each([
     [
-      20,
-      10,
+      [
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        ['yellow', null, null, null, null, null, null, null, null, null],
+        ['red', null, 'red', 'yellow', 'red', null, null, null, null, null],
+      ],
       [
         [null, null, null, null, null, null, null, null, null, null],
         [null, null, null, null, null, null, null, null, null, null],
@@ -191,8 +211,14 @@ describe('test cleanBoard', () => {
       ],
     ],
     [
-      6,
-      7,
+      [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, 'yellow', null, 'red', null, null],
+        ['red', null, 'yellow', 'red', 'yellow', null, null],
+      ],
       [
         [null, null, null, null, null, null, null],
         [null, null, null, null, null, null, null],
@@ -202,9 +228,9 @@ describe('test cleanBoard', () => {
         [null, null, null, null, null, null, null],
       ],
     ],
-  ]).it("When the input is '%s'", (rows, columns, expectedOutput) => {
+  ]).it("When the input is '%s'", (board, expectedOutput) => {
     // Act
-    const actualOutput = cleanBoard(rows, columns);
+    const actualOutput = cleanBoard(board);
     // Assert
     expect(expectedOutput).toStrictEqual(actualOutput);
   });

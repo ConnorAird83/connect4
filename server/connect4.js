@@ -9,24 +9,19 @@ function placeCounter(board, column) {
   return null;
 }
 
-function cleanBoard(rows, columns) {
-  // console.log('reset game was called');
-  const rowArray = [];
-  const board = [];
-  for (let i = 0; i < columns; i += 1) {
-    rowArray.push(null);
+function cleanBoard(board) {
+  const newBoard = board.slice();
+  for (let i = 0; i < newBoard.length; i += 1) {
+    for (let j = 0; j < newBoard[i].length; j += 1) {
+      newBoard[i][j] = null;
+    }
   }
-  for (let j = 0; j < rows; j += 1) {
-    board.push(rowArray);
-  }
-  return board;
+  return newBoard;
 }
 
 function checkWinner(board, target) {
   // console.log('checkWinner was called');
   let winner = null;
-  let redCount = 0;
-  let yellowCount = 0;
   let redString = '';
   let yellowString = '';
 
@@ -37,67 +32,76 @@ function checkWinner(board, target) {
 
   /* check for row win */
   // fills an array with a string of the first letters of each element in each row (r, y or n)
-  const rowStringsArray = board.map((row) => row.reduce((string, column) => {
-    if (column === null) {
-      return `${string}n`;
-    }
-    return `${string}${column[0]}`;
-  }, ''));
-  // if a row includes a string of 4 r's or y's set winner to 'red' or 'yellow' respectively
-  winner = rowStringsArray.reduce((result, row) => {
-    // console.log(result, redString);
-    let tempResult = null;
-    // only edit the returned value if a winner has not yet been found
-    if (result === null) {
-      // if four r's or y's are found in a row edit the returned result as appropriate
-      if (row.includes(redString)) {
-        tempResult = 'red';
-      } else if (row.includes(yellowString)) {
-        tempResult = 'yellow';
+  winner = board
+    .map((row) => row.reduce((string, column) => {
+      if (column === null) {
+        return `${string}n`;
       }
-      return tempResult;
-    }
-    // Will return here if the winner has already been found
-    return result;
-  }, null);
+      return `${string}${column[0]}`;
+    }, ''))
+    // if a row includes a string of 4 r's or y's set winner to 'red' or 'yellow' respectively
+    .reduce((result, row) => {
+      // console.log(result, redString);
+      let tempResult = null;
+      // only edit the returned value if a winner has not yet been found
+      if (result === null) {
+        // if four r's or y's are found in a row edit the returned result as appropriate
+        if (row.includes(redString)) {
+          tempResult = 'red';
+        } else if (row.includes(yellowString)) {
+          tempResult = 'yellow';
+        }
+        return tempResult;
+      }
+      // Will return here if the winner has already been found
+      return result;
+    }, null);
 
   if (winner !== null) {
     return winner;
   }
 
+  winner = null;
+
   /* check for column wins */
-  // loop over columns
-  for (let column = 0; column < board[0].length; column += 1) {
-    // loop over rows (bottom to top)
-    for (let row = board.length - 1; row >= 0; row -= 1) {
-      if (redCount >= target || yellowCount >= target) {
-        return winner;
-      // eslint-disable-next-line no-else-return
-      } else if (board[row][column] === null) {
-        redCount = 0;
-        yellowCount = 0;
-        winner = null;
-      } else if (board[row][column] === 'red') {
-        redCount += 1;
-        yellowCount = 0;
-        winner = 'red';
-      } else if (board[row][column] === 'yellow') {
-        yellowCount += 1;
-        redCount = 0;
-        winner = 'yellow';
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(`Incorrect variable in board at (${row}, ${column})`);
+  // fill a new array with the board data but place row cells inside column arrays
+  let count = 0;
+  const newBoard = [];
+  board.flat().forEach((circle) => {
+    const column = count % board[0].length;
+    if (count < board[0].length) {
+      newBoard.push([]);
+    }
+    newBoard[column].unshift(`${circle}`);
+    count += 1;
+  });
+
+  // now use same approach as for checking row wins
+  winner = newBoard
+    .map((column) => column.reduce((string, row) => {
+      if (row === null) {
+        return `${string}n`;
       }
-    }
-    // check for 4 or more in row
-    if (redCount >= target || yellowCount >= target) {
-      return winner;
-    // eslint-disable-next-line no-else-return
-    } else {
-      redCount = 0;
-      yellowCount = 0;
-    }
+      return `${string}${row[0]}`;
+    }, ''))
+    .reduce((result, column) => {
+      let tempResult = null;
+      // only edit the returned value if a winner has not yet been found
+      if (result === null) {
+        // if four r's or y's are found in a row edit the returned result as appropriate
+        if (column.includes(redString)) {
+          tempResult = 'red';
+        } else if (column.includes(yellowString)) {
+          tempResult = 'yellow';
+        }
+        return tempResult;
+      }
+      // Will return here if the winner has already been found
+      return result;
+    }, null);
+
+  if (winner !== null) {
+    return winner;
   }
 
   winner = null;
@@ -152,9 +156,14 @@ function checkWinner(board, target) {
   return null;
 }
 
-function getCurrentPlayer(board) {
+function getCurrentPlayer(board, starter) {
   // get 1D version of board
   const flatBoard = board.flat();
+  let otherPlayer = 'yellow';
+
+  if (starter === 'yellow') {
+    otherPlayer = 'red';
+  }
 
   const counters = flatBoard.reduce((acc, cell) => {
     if (cell !== null) {
@@ -166,9 +175,21 @@ function getCurrentPlayer(board) {
 
   // if an even number of turns have been played it is reds turn else yellows
   if (counters % 2 === 0) {
-    return 'red';
+    return starter;
   }
-  return 'yellow';
+  return otherPlayer;
+}
+
+function createDataBoard(rows, columns) {
+  const newBoard = [];
+  for (let i = 0; i < rows; i += 1) {
+    const newRow = [];
+    for (let j = 0; j < columns; j += 1) {
+      newRow.push(null);
+    }
+    newBoard.push(newRow);
+  }
+  return newBoard;
 }
 
 // module = module || {};
@@ -177,4 +198,5 @@ module.exports = {
   cleanBoard,
   placeCounter,
   getCurrentPlayer,
+  createDataBoard,
 };

@@ -1,0 +1,47 @@
+<!doctype html>
+
+<html>
+  
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="main.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="bg">
+    <div class="flex-container">
+      <h1 class="banner jumbotron" id="title">Connect 4</h1>
+      <div id="inputs">
+        <p>Rows: <input class="input" id="num-rows" type="text" name="num-rows" /></p>
+        <p> Columns: <input class="input" id="num-columns" type="text" name="num-columns" /></p>
+        <p>Target Length: <input class="input" id="target-length" type="text" name="target-length" /></p>
+      </div>
+      <button id="draw-board">Get Board</button>
+
+      <div id="player-win-count">
+        <div class='win-circle' id='redWinCircle' style='background-color: red;'>
+          <span class='win-count' id="red-win-count">0</span>
+        </div>
+        <div class='win-circle' id='yellowWinCircle' style='background-color: yellow;'>
+          <span class='win-count' id="yellow-win-count">0</span>
+        </div>
+      </div>
+
+      
+      <div id="game-board"><p id='winner-display'>Winner!</p></div>
+      </br>
+      <button class="reset-button" id="reset-button">Reset</button>
+    </div>
+
+    </br>
+
+    <footer>
+      <p id="footer">Author: C. Aird</br> <a href="mailto:connor.aird@infinityworks.com">connor.aird@infinityworks.com</a></p>
+    </footer>
+  </div>
+  <script src="./joiner.js"></script>
+</body>
+
+</html>
