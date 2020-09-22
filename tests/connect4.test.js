@@ -1,11 +1,88 @@
 /* eslint-disable no-undef */
 const each = require('jest-each').default;
-const {
-  checkWinner,
-  cleanBoard,
-  placeCounter,
-  getCurrentPlayer,
-} = require('../server/connect4.js');
+const c4 = require('../server/connect4.js');
+const mock = require('mock-fs');
+const fs = require('fs').promises;
+
+require('iconv-lite').encodingExists('foo');
+
+const mockData = [{
+  board:
+  [
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null],
+  ],
+  target: 4,
+  firstPlayer: 'yellow',
+  redScore: 0,
+  yellowScore: 0,
+  id: '69',
+}];
+
+// beforeEach(() => {
+//   mock({
+//     data: {
+//       'games.json': JSON.stringify(mockData),
+//     },
+//   });
+// });
+
+afterEach(() => {
+  mock.restore();
+});
+
+describe('test createDataBoard', () => {
+  // Arrange
+  each([
+    [
+      20,
+      10,
+      [
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null, null],
+      ],
+    ],
+    [
+      6,
+      7,
+      [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+      ],
+    ],
+  ]).it("When the input is '%s'", (rows, columns, expectedOutput) => {
+    // Act
+    const actualOutput = c4.createDataBoard(rows, columns);
+    // Assert
+    expect(expectedOutput).toStrictEqual(actualOutput);
+  });
+});
 
 describe('test placeCounter', () => {
   // Arrange
@@ -60,7 +137,7 @@ describe('test placeCounter', () => {
     ],
   ]).it("When the input is '%s'", (board, column, expectedOutput) => {
     // Act
-    const actualOutput = placeCounter(board, column);
+    const actualOutput = c4.placeCounter(board, column);
     // Assert
     expect(actualOutput).toBe(expectedOutput);
   });
@@ -155,84 +232,9 @@ describe('test checkWinner', () => {
     ],
   ]).it("When the input is '%s'", (board, target, expectedOutput) => {
     // Act
-    const actualOutput = checkWinner(board, target);
+    const actualOutput = c4.checkWinner(board, target);
     // Assert
     expect(actualOutput).toBe(expectedOutput);
-  });
-});
-
-describe('test cleanBoard', () => {
-  // Arrange
-  each([
-    [
-      [
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        ['yellow', null, null, null, null, null, null, null, null, null],
-        ['red', null, 'red', 'yellow', 'red', null, null, null, null, null],
-      ],
-      [
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null, null, null, null],
-      ],
-    ],
-    [
-      [
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, 'yellow', null, 'red', null, null],
-        ['red', null, 'yellow', 'red', 'yellow', null, null],
-      ],
-      [
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-      ],
-    ],
-  ]).it("When the input is '%s'", (board, expectedOutput) => {
-    // Act
-    const actualOutput = cleanBoard(board);
-    // Assert
-    expect(expectedOutput).toStrictEqual(actualOutput);
   });
 });
 
@@ -275,8 +277,128 @@ describe('test getCurrentPlayer', () => {
     ],
   ]).it("When the input is '%s'", (board, starter, expectedOutput) => {
     // Act
-    const actualOutput = getCurrentPlayer(board, starter);
+    const actualOutput = c4.getCurrentPlayer(board, starter);
     // Asert
     expect(actualOutput).toBe(expectedOutput);
+  });
+});
+
+describe('getGames', () => {
+  it("When getGames is called and the file doesn't exist, an empty array is returned and the file created", async () => {
+    // Arrange
+    mock({
+      data: {
+        'incorrect.js': 'wrong',
+      },
+    });
+    // Act & Assert
+    await c4.getGames()
+      .then((output) => {
+        expect(output).toEqual([]);
+        return fs.readFile('data/games.json', 'utf-8')
+          .then((data) => expect(JSON.parse(data)).toEqual([]));
+      });
+  });
+
+  it("When getGames is called and the directory doesn't exist, an empty array is returned and the dir/file created", async () => {
+    // Arrange
+    mock({
+      incorrect: {
+        'wrong.js': 'foo bar',
+      },
+    });
+
+    // Act
+    const givenData = await c4.getGames();
+    const fileData = await fs.readFile('data/games.json', 'utf-8');
+
+    // Assert
+    expect(givenData).toEqual([]);
+    expect(JSON.parse(fileData)).toEqual([]);
+  });
+
+  it('when getGames is called and everything exists, the contents of the appropriate file is returned', async () => {
+    // Arrange
+    mock({
+      data: {
+        'games.json': JSON.stringify(mockData),
+      },
+    });
+
+    // Act
+    const givenData = await c4.getGames();
+
+    // Assert
+    expect(givenData).toEqual(mockData);
+  });
+});
+
+describe('updateDataFile', () => {
+  it('when a happy update is proposed the file is updated correctly', async () => {
+    mock({
+      data: {
+        'games.json': JSON.stringify(mockData),
+      },
+    });
+    const storedGames = [{ ...mockData[0] }];
+    const newGame = { ...storedGames[0] };
+
+    newGame.redScore = 1;
+    c4.updateDataFile(storedGames, newGame);
+
+    const data = await fs.readFile('data/games.json', 'utf-8');
+
+    expect(JSON.parse(data)[0]).toEqual(
+      expect.objectContaining({
+        redScore: 1,
+      }),
+    );
+  });
+
+  it.todo('When the id does not match the ');
+});
+
+// TO DO
+describe('newGameState', () => {
+  each([
+    [
+      [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+      ],
+      5,
+      467902748927482,
+    ],
+    [
+      [
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, 'red'],
+        ['red', null, 'yellow', null, null, 'red', 'yellow'],
+      ],
+      3,
+      837631863162,
+    ],
+  ]).it('When the input is %s, %s, %s', (board, target, gameId) => {
+    // Act
+    const expectedOutput = {
+      board: board.slice(),
+      target: target,
+      firstPlayer: 'red',
+      redScore: 0,
+      yellowScore: 0,
+      id: gameId,
+    };
+    const actualOutput = c4.newGameState(board, target, gameId);
+    // Assert
+    expect(actualOutput).toEqual(expectedOutput);
   });
 });

@@ -6,8 +6,11 @@ const mock = require('mock-fs');
 const request = require('supertest');
 const { app, getTheGame } = require('../server/server.js');
 const c4 = require('../server/connect4.js');
+const fs = require('fs').promises;
 
-const mockData = {
+require('iconv-lite').encodingExists('foo');
+
+const mockData = [{
   board:
   [
     [null, null, null, null, null, null, null],
@@ -22,7 +25,15 @@ const mockData = {
   redScore: 0,
   yellowScore: 1,
   id: '69',
-};
+}];
+
+beforeEach(() => {
+  mock({
+    data: {
+      'games.json': JSON.stringify(mockData),
+    },
+  });
+});
 
 afterEach(() => {
   mock.restore();
@@ -32,7 +43,7 @@ afterEach(() => {
 describe('getTheGame', () => {
   it('when getTheGame is called with an incorrect id an error is thrown', async () => {
     // Arrange
-    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => [{ ...mockData }]);
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
     const id = '12345';
     // Act & Assert
     expect(getTheGame(id)).rejects.toEqual(new Error('Game id does not exist!'));
@@ -41,54 +52,24 @@ describe('getTheGame', () => {
 
   it('When getTheGame is called with a correct id the appropriate game is returned', async () => {
     // Arrange
-    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => [{ ...mockData }]);
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
     const id = '69';
     // Act & Assert
-    expect(getTheGame(id)).resolves.toEqual({ ...mockData });
+    expect(getTheGame(id)).resolves.toEqual({ ...mockData[0] });
     expect(spy).toHaveBeenCalled();
   });
 });
 
-// TO DO: Edit so that an error is not returned but the file is created and an empty array returned
-describe('getGames', () => {
-  it("When getGames is called and the file doesn't exist, an empty array is returned and the file created", async () => {
-    // Arrange
-    mock({
-      data: {},
-    });
-    // Act & Assert
-    c4.getGames()
-      .then((output) => {
-        expect(output).toEqual([]);
-        expect(mock.data['games.json']).toEqual([]);
-      });
-  });
-
-  it("When getGames is called and the directory doesn't exist, an emty array is returned and the dir/file created", async () => {
-    // Arrange
-    mock({});
-
-    // Act & Assert
-    c4.getGames()
-      .then((output) => {
-        expect(output).toEqual([]);
-        expect(mock.data['games.json']).toEqual([]);
-      });
-  });
-
-  it.todo('when getGames is called correctly the contents of the appropriate file is returned');
-});
-
 // TO DO
 describe('/reset/:id', () => {
-  it.todo('when reset request is called the correct board is reset');
-  // , (done) => {
-  //   request(serv.app)
-  //     .get('/users')
-  //     .expect('Content-Type', /json/)
-  //     .expect(200, JSON.stringify(users))
-  //     .end(done);
-  // });
+  it('when reset request is called the correct board is reset', (done) => {
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
+    request(app)
+      .put('/reset/69')
+      .expect('Content-Type', 'text/html; charset=utf-8')
+      .expect(200, 'Board has been reset')
+      .end(done);
+  });
 });
 
 describe('/place/:id/:column/:edit', () => {

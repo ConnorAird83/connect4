@@ -1,4 +1,6 @@
 const fs = require('fs').promises;
+const fileSystem = require('fs');
+const serv = require('./server.js');
 
 function placeCounter(board, column) {
   // loop over rows starting from the bottom
@@ -11,15 +13,15 @@ function placeCounter(board, column) {
   return null;
 }
 
-function cleanBoard(board) {
-  const newBoard = board.slice();
-  for (let i = 0; i < newBoard.length; i += 1) {
-    for (let j = 0; j < newBoard[i].length; j += 1) {
-      newBoard[i][j] = null;
-    }
-  }
-  return newBoard;
-}
+// function cleanBoard(board) {
+//   const newBoard = board.slice();
+//   for (let i = 0; i < newBoard.length; i += 1) {
+//     for (let j = 0; j < newBoard[i].length; j += 1) {
+//       newBoard[i][j] = null;
+//     }
+//   }
+//   return newBoard;
+// }
 
 function checkWinner(board, target) {
   // console.log('checkWinner was called');
@@ -194,17 +196,17 @@ function createDataBoard(rows, columns) {
   return newBoard;
 }
 
-function updateDataFile(storedGames, gameInQuestion, id) {
-  const copyOfGames = { ...storedGames };
+function updateDataFile(storedGames, newGame) {
+  const copyOfGames = storedGames.slice();
   // update the appropriate game in storedGames and then write out to the data file
   copyOfGames.forEach((game) => {
     const index = copyOfGames.indexOf(game);
-    if (game.id === id) {
-      copyOfGames[index] = { ...gameInQuestion };
+    if (game.id === newGame.id) {
+      copyOfGames[index] = { ...newGame };
     }
   });
   fs.writeFile(
-    './data/games.json',
+    'data/games.json',
     JSON.stringify(copyOfGames),
     'utf-8',
   );
@@ -213,20 +215,36 @@ function updateDataFile(storedGames, gameInQuestion, id) {
 // gets the existing boards from the data file
 async function getGames() {
   try {
-    await fs.access('./data/games.json');
-
     const output = await fs.readFile('./data/games.json', 'utf-8')
       .then((fileData) => JSON.parse(fileData));
 
     return output;
-  } catch (error) {
-    // if the file doesn't exist create it and return an empty array
-    await fs.writeFile(
-      './data/games.json',
-      '[]',
-      'utf-8',
-    );
-    return [];
+  } catch (error1) {
+    try {
+      // if the file doesn't exist create it and return an empty array
+      await fs.writeFile(
+        './data/games.json',
+        '[]',
+        'utf-8',
+      );
+      return [];
+    } catch (error2) {
+      // create the directory and then write to the file inside of it
+      await fs.mkdir('./data', (err) => {
+        if (err) {
+          console.log(err.message);
+        } else {
+          console.log('New Directory was created');
+        }
+      });
+
+      await fs.writeFile(
+        './data/games.json',
+        '[]',
+        'utf-8',
+      );
+      return [];
+    }
   }
 }
 
@@ -241,34 +259,13 @@ function newGameState(newBoard, newTarget, gameId) {
   };
 }
 
-// swap the starting player
-async function swapFirstPlayer(id) {
-  const storedGames = await getGames();
-  getTheGame(id)
-    .then((game) => {
-      const newGame = { ...game };
-      if (newGame.firstPlayer === 'red') {
-        newGame.firstPlayer = 'yellow';
-      } else {
-        newGame.firstPlayer = 'red';
-      }
-      return newGame;
-    })
-    .then((finishedGame) => {
-      updateDataFile(storedGames, finishedGame, id);
-    });
-}
-
 // module = module || {};
 module.exports = {
   checkWinner,
-  cleanBoard,
   placeCounter,
   getCurrentPlayer,
   createDataBoard,
   updateDataFile,
   getGames,
-  // getTheGame,
   newGameState,
-  swapFirstPlayer,
 };

@@ -8,15 +8,32 @@ app.use(express.static('./client'));
 
 const getTheGame = async (id) => {
   // get the stored games
-  const storedGames = await c4.getGames();
+  const allGames = await c4.getGames();
   // get the specific board
-  const gameInQuestion = storedGames.filter((game) => game.id === id);
+  const oneGame = allGames.filter((game) => game.id === id);
 
-  if (gameInQuestion.length === 0) {
+  if (oneGame.length === 0) {
     throw new Error('Game id does not exist!');
   }
 
-  return gameInQuestion[0];
+  return oneGame[0];
+};
+
+const swapFirstPlayer = async (id) => {
+  const storedGames = await c4.getGames();
+  getTheGame(id)
+    .then((game) => {
+      const newGame = { ...game };
+      if (newGame.firstPlayer === 'red') {
+        newGame.firstPlayer = 'yellow';
+      } else {
+        newGame.firstPlayer = 'red';
+      }
+      return newGame;
+    })
+    .then((finishedGame) => {
+      c4.updateDataFile(storedGames, finishedGame);
+    });
 };
 
 // request to place a counter
@@ -37,7 +54,7 @@ app.post('/place/:id/:column/:edit', async (req, res) => {
     const player = c4.getCurrentPlayer(gameInQuestion.board, gameInQuestion.firstPlayer);
     gameInQuestion.board[row][column] = player;
     // *** update the stored data ***
-    c4.updateDataFile(storedGames, gameInQuestion, id);
+    c4.updateDataFile(storedGames, gameInQuestion);
   }
 
   res.send(`${row}`);
@@ -45,16 +62,18 @@ app.post('/place/:id/:column/:edit', async (req, res) => {
 
 // request to reset the game
 app.put('/reset/:id', async (req, res) => {
-  const { id } = req.params;
-  // *** get the state of the game in question ***
-  const storedGames = await c4.getGames();
-  const gameInQuestion = await getTheGame(id);
-
-  gameInQuestion.board = c4.cleanBoard(gameInQuestion.board);
-
-  c4.DataFile(storedGames, gameInQuestion, id);
-
-  res.send('data board has been reset');
+  try {
+    const { id } = req.params;
+    // *** get the state of the game in question ***
+    const storedGames = await c4.getGames();
+    const gameInQuestion = await getTheGame(id);
+    const board = gameInQuestion.board.slice();
+    gameInQuestion.board = c4.createDataBoard(board.length, board[0].length);
+    c4.updateDataFile(storedGames, gameInQuestion);
+    res.status(200).send('Board has been reset');
+  } catch (err) {
+    res.status(404).send('Error reseting the board! Refresh the page and input the correct game id');
+  }
 });
 
 // request to draw a new grid
@@ -122,7 +141,7 @@ app.get('/winner/:id', async (req, res) => {
       const winner = output[0];
       const gameInQuestion = output[1];
       if (winner !== null) {
-        c4.swapFirstPlayer(id);
+        swapFirstPlayer(id);
         // update win count
         if (winner === 'red') {
           gameInQuestion.redScore += 1;
@@ -130,7 +149,7 @@ app.get('/winner/:id', async (req, res) => {
           gameInQuestion.yellowScore += 1;
         }
       }
-      c4.updateDataFile(storedGames, gameInQuestion, id);
+      c4.updateDataFile(storedGames, gameInQuestion);
       res.send([winner]);
     });
 });
@@ -202,7 +221,12 @@ app.put('/beginGame/:id', async (req, res) => {
   res.send(newGame);
 });
 
-app.listen(8080);
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(8080, () => {
+    console.log('server started on port 8080');
+  });
+}
+// app.listen(8080);
 
 module.exports = {
   getTheGame,
