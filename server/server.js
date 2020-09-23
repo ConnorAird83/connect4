@@ -6,6 +6,8 @@ const app = express();
 
 app.use(express.static('./client'));
 
+const port = 3004;
+
 const getTheGame = async (id) => {
   // get the stored games
   const allGames = await c4.getGames();
@@ -261,8 +263,8 @@ app.put('/beginGame/:id', async (req, res) => {
 });
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(8080, () => {
-    console.log('server started on port 8080');
+  app.listen(port, () => {
+    console.log(`server started on port ${port}`);
   });
 }
 // app.listen(8080);

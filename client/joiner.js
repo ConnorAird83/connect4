@@ -1,4 +1,5 @@
-const baseURL = 'http://localhost:8080';
+const port = 3004;
+const baseURL = ''; // `http://localhost:${port}`;
 let gameId = '0';
 
 function drawGrid(board) {
