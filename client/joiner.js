@@ -29,7 +29,7 @@ function drawGrid(board) {
 
 function updateScreenBoard(row, column, player) {
   $(`#circle-row-${row}-column-${column}`).css('background-color', player).css('opacity', 1);
-  move indicative circle up one
+  // move indicative circle up one
   if (player === 'red') {
     $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
   } else {
