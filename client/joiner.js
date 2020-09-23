@@ -29,12 +29,12 @@ function drawGrid(board) {
 
 function updateScreenBoard(row, column, player) {
   $(`#circle-row-${row}-column-${column}`).css('background-color', player).css('opacity', 1);
-  // move indicative circle up one
-  // if (player === 'red') {
-  //   $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
-  // } else {
-  //   $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 0, 10)').css('opacity', 0.8);
-  // }
+  move indicative circle up one
+  if (player === 'red') {
+    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
+  } else {
+    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 0, 10)').css('opacity', 0.8);
+  }
 }
 
 function updateWinCounts(winner, state) {
@@ -165,7 +165,7 @@ function setupListeners() {
     const cells = $(`#${rowArray[row].id}`).children();
     cells.each((circle) => {
       $(`#${cells[circle].id}`).click(columnClicked);
-      // $(`#${cells[circle].id}`).hover(mouseOn, mouseOff);
+      $(`#${cells[circle].id}`).hover(mouseOn, mouseOff);
     });
   });
 }
