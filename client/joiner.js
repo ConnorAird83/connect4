@@ -1,6 +1,43 @@
 const port = 3004;
 const baseURL = ''; // `http://localhost:${port}`;
 let gameId = '0';
+let gameBoard = [];
+let firstPlayer = 'red';
+
+async function getRow(board, column) {
+  // loop over rows starting from the bottom
+  for (let row = board.length - 1; row >= 0; row -= 1) {
+    // if the appropriate cell is free return it's  position
+    if (board[row][column] === null) {
+      return row;
+    }
+  }
+  return null;
+}
+
+function getCurrentPlayer(board, starter) {
+  // get 1D version of board
+  const flatBoard = board.flat();
+  let otherPlayer = 'yellow';
+
+  if (starter === 'yellow') {
+    otherPlayer = 'red';
+  }
+
+  const counters = flatBoard.reduce((acc, cell) => {
+    if (cell !== null) {
+      // eslint-disable-next-line no-param-reassign
+      acc += 1;
+    }
+    return acc;
+  }, 0);
+
+  // if an even number of turns have been played it is reds turn else yellows
+  if (counters % 2 === 0) {
+    return starter;
+  }
+  return otherPlayer;
+}
 
 function drawGrid(board) {
   const numberOfRows = board.length;
@@ -30,12 +67,6 @@ function drawGrid(board) {
 
 function updateScreenBoard(row, column, player) {
   $(`#circle-row-${row}-column-${column}`).css('background-color', player).css('opacity', 1);
-  // move indicative circle up one
-  if (player === 'red') {
-    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
-  } else {
-    $(`#circle-row-${row - 1}-column-${column}`).css('background-color', 'rgb(255, 0, 10)').css('opacity', 0.8);
-  }
 }
 
 function updateWinCounts(winner, state) {
@@ -119,17 +150,13 @@ async function columnClicked(event) {
 
 async function mouseOn(event) {
   // get the current state
-  const player = await fetch(`${baseURL}/currentPlayer/${gameId}`)
-    .then((response) => response.json())
-    .then((data) => data[0]);
+  const player = getCurrentPlayer(gameBoard, firstPlayer)
 
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
   // find the first row with a free space and update the screen
-  fetch(`${baseURL}/place/${gameId}/${column}/false`, {
-    method: 'POST',
-  }).then((response) => response.json())
+  getRow(gameBoard, column)
     .then((row) => {
       // change the colour of that circle to pastille version of the colours
       if (row !== null) {
@@ -139,22 +166,20 @@ async function mouseOn(event) {
           $(`#circle-row-${row}-column-${column}`).css('background-color', 'rgb(255, 255, 10)').css('opacity', 0.8);
         }
       }
-    });
+    })
 }
 
 function mouseOff(event) {
   // find the current column
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
   // find the first row with a free space
-  fetch(`${baseURL}/place/${gameId}/${column}/false`, {
-    method: 'POST',
-  }).then((response) => response.json())
+  getRow(gameBoard, column)
     .then((row) => {
       // change the colour of that circle back to white
       if (row !== null) {
         $(`#circle-row-${row}-column-${column}`).css('background-color', 'white').css('opacity', 1);
       }
-    });
+    })
 }
 
 function setupListeners() {
@@ -186,10 +211,6 @@ function startGame(gameState) {
   yellowWins.text(gameState.yellowScore);
 }
 
-function myFunction() {
-  setInterval(function(){ alert("Hello"); }, 3000);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   // get the gameId
   $('#id-prompt').modal({ backdrop: 'static', keyboard: false });
@@ -203,6 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'PUT',
       }).then((response) => response.json())
         .then((gameState) => {
+          gameBoard = gameState.board;
+          firstPlayer = gameState.firstPlayer;
           startGame(gameState);
         })
         .then(() => {
