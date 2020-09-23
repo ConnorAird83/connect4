@@ -246,3 +246,5 @@ $('#reset-button').click(() => {
   // hide the winner banner
   $('#winner-display').css('display', 'none');
 });
+
+// TO DO: change reset button to use newBoard request instead of reset request

@@ -21,7 +21,7 @@ const mockData = [{
     [null, null, null, null, null, null, null],
   ],
   target: 4,
-  firstPlayer: 'yellow',
+  firstPlayer: 'red',
   redScore: 0,
   yellowScore: 1,
   id: '69',
@@ -70,28 +70,162 @@ describe('/reset/:id', () => {
       .expect(200, 'Board has been reset')
       .end(done);
   });
+
+  it.todo('When an incorrect id is given an error message is returned');
 });
 
 describe('/place/:id/:column/:edit', () => {
-  it.todo('test');
+  each([
+    [ // Incorrect id
+      'djd2u12hdbd23ueh2',
+      2,
+      false,
+      mockData.slice(),
+      'Id not found',
+    ],
+    // Incorrect column
+    [
+      '69',
+      100,
+      false,
+      mockData.slice(),
+      'Invalid column number given',
+    ],
+    [
+      '69',
+      'foo bar',
+      false,
+      mockData.slice(),
+      'Column must be an integer',
+    ],
+    [ // incorrect edit
+      '69',
+      2,
+      'foo bar',
+      mockData.slice(),
+      'Parameter "edit" must be a boolean value',
+    ],
+  ]).it('When an invalid parameter is given an error is returned', (id, column, edit, mockedData, message, done) => {
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockedData);
+    request(app)
+      .post(`/place/${id}/${column}/${edit}`)
+      .expect('Content-Type', 'text/html; charset=utf-8')
+      .expect(400, message)
+      .end(done);
+  });
+
+  each([
+    [
+      '69',
+      2,
+      false,
+      5,
+      mockData[0].board,
+    ],
+    [
+      '69',
+      2,
+      true,
+      5,
+      [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, 'red', null, null, null, null],
+      ],
+    ],
+  ]).it("When edit is true/false an edit is/isn't made", async (id, column, edit, row, endBoard, done) => {
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData.slice());
+    request(app)
+      .post(`/place/${id}/${column}/${edit}`)
+      .expect('Content-Type', 'text/html; charset=utf-8')
+      .expect(200, `${row}`)
+      .end(async (err, res) => {
+        const endData = await fs.readFile('data/games.json', 'utf-8')
+          .then((result) => JSON.parse(result));
+        expect(endData.filter((game) => game.id === id)[0])
+          .toEqual({ ...mockData[0], board: endBoard });
+        done();
+      });
+  });
 });
 
 describe('/newBoard/:rows/:columns/:target/:id', () => {
-  it.todo('test');
+  each([
+    // Invalid rows
+    [
+      -9,
+      7,
+      4,
+      69,
+      'Rows must be a positive integer',
+    ],
+    [
+      'foo bar',
+      7,
+      4,
+      69,
+      'Rows must be a positive integer',
+    ],
+    // Invalid columns
+    [
+      6,
+      -7,
+      4,
+      69,
+      'Columns must be a positive integer',
+    ],
+    [
+      6,
+      'foo bar',
+      4,
+      69,
+      'Columns must be a positive integer',
+    ],
+    // Invalid target
+    [
+      6,
+      7,
+      -4,
+      69,
+      'Target must be a positive integer',
+    ],
+    [
+      6,
+      7,
+      'foo bar',
+      69,
+      'Target must be a positive integer',
+    ],
+  ]).it('When invalid inputs are provided an error is returned', (rows, columns, target, id, message, done) => {
+    request(app)
+      .put(`/newBoard/${rows}/${columns}/${target}/${id}`)
+      .expect(400, message)
+      .end(done);
+  });
+
+  it.todo('When a non-existing id is given an error is returned');
+  it.todo('When valid inputs are provided a new board is created');
 });
 
-describe('/currentPlayer/:id', () => {
-  it.todo('test');
-});
+// describe('/currentPlayer/:id', () => {
+//   it.todo('When a non-existent id is provided an error is returned');
+//   it.todo('When a valid id is provided the correct player is returned');
+// });
 
-describe('/winner/:id', () => {
-  it.todo('test');
-});
+// describe('/winner/:id', () => {
+//   it.todo('When a non-existing id was provided an error was returned');
+//   it.todo('When a valid id is provided the correct winner is returned');
+// });
 
-describe('/getState/:id', () => {
-  it.todo('test');
-});
+// describe('/getState/:id', () => {
+//   it.todo('When a non-existing id is provided an error is returned');
+//   it.todo('When a valid id is provided the correct state is returned');
+// });
 
-describe('/beginGame/:id', () => {
-  it.todo('test');
-});
+// describe('/beginGame/:id', () => {
+//   it.todo('When an invalid id is provided an error is returned');
+//   it.todo('When a valid id is provided a new game is created');
+// });

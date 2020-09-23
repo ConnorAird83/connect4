@@ -214,6 +214,7 @@ function updateDataFile(storedGames, newGame) {
 
 // gets the existing boards from the data file
 async function getGames() {
+  // console.log('real getGames invoked');
   try {
     const output = await fs.readFile('./data/games.json', 'utf-8')
       .then((fileData) => JSON.parse(fileData));

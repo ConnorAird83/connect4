@@ -333,6 +333,7 @@ describe('getGames', () => {
   });
 });
 
+// TO DO
 describe('updateDataFile', () => {
   it('when a happy update is proposed the file is updated correctly', async () => {
     mock({
@@ -355,10 +356,9 @@ describe('updateDataFile', () => {
     );
   });
 
-  it.todo('When the id does not match the ');
+  it.todo('When the id of newGame does not match an existing game an error is returned');
 });
 
-// TO DO
 describe('newGameState', () => {
   each([
     [

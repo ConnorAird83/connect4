@@ -39,9 +39,34 @@ const swapFirstPlayer = async (id) => {
 // request to place a counter
 app.post('/place/:id/:column/:edit', async (req, res) => {
   const { column, id } = req.params;
+
+  // check for a valid edit value
+  if (req.params.edit !== 'true' && req.params.edit !== 'false') {
+    res.status(400).send('Parameter "edit" must be a boolean value');
+    return;
+  }
+
   // *** get the state of the game in question ***
   const storedGames = await c4.getGames();
+
+  // console.log(storedGames);
+
+  // Check for valid id
+  if (!(storedGames.some((game) => game.id === id))) {
+    res.status(400).send('Id not found');
+    return;
+  }
+
   const gameInQuestion = await getTheGame(id);
+
+  // check for valid column
+  if ((gameInQuestion.board[0].length <= parseInt(column)) || (parseInt(column) < 0)) {
+    res.status(400).send('Invalid column number given');
+    return;
+  } else if (isNaN(parseInt(column))) {
+    res.status(400).send('Column must be an integer');
+    return;
+  }
 
   const row = c4.placeCounter(gameInQuestion.board, column);
 
@@ -84,6 +109,21 @@ app.put('/newBoard/:rows/:columns/:target/:id', async (req, res) => {
   const { columns } = req.params;
   const { id } = req.params;
   const newTarget = req.params.target;
+  // Check rows is valid
+  if (isNaN(parseInt(rows)) || (parseInt(rows) < 0)) {
+    res.status(400).send('Rows must be a positive integer');
+    return;
+  }
+  // Check columns is valid
+  if (isNaN(parseInt(columns)) || (parseInt(columns) < 0)) {
+    res.status(400).send('Columns must be a positive integer');
+    return;
+  }
+  // Check target is valid
+  if (isNaN(parseInt(newTarget)) || (parseInt(newTarget) < 0)) {
+    res.status(400).send('Target must be a positive integer');
+    return;
+  }
 
   const newBoard = c4.createDataBoard(rows, columns);
 
@@ -115,7 +155,6 @@ app.put('/newBoard/:rows/:columns/:target/:id', async (req, res) => {
     'utf-8',
   );
 
-  // res.send(game.board);
   res.send(newBoard);
 });
 
@@ -232,3 +271,5 @@ module.exports = {
   getTheGame,
   app,
 };
+
+// TO DO: change reset button to use newBoard request instead of reset request
