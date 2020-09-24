@@ -135,12 +135,10 @@ app.put('/newBoard/:rows/:columns/:target/:id', async (req, res) => {
 
   // check if the game already exists
   const gameInQuestion = allGames.filter((match) => match.id === id);
-  // if the game does not exist yet, create a new game object
+  // if the game does not exist yet, send an error back
   if (gameInQuestion.length === 0) {
-    gameObj = c4.newGameState(newBoard, newTarget, id);
-    // append this new object to the stored games
-    allGames.unshift(gameObj);
-    finalGames = c4.deepCopy(allGames);
+    res.status(400).send('Id does not match any games');
+    return;
   } else {
     // delete existing game object from the data file
     finalGames = allGames.filter((match) => match.id !== id);
@@ -210,32 +208,19 @@ app.get('/getState/:id', (req, res) => {
       const player = output[0];
       const winner = output[1];
       const gameInQuestion = output[2];
-      if (winner === null) {
-        res.send(`
-        {
-          "target": ${gameInQuestion.target},
-          "winner": ${winner},
-          "player": "${player}",
-          "redScore": ${gameInQuestion.redScore},
-          "yellowScore": ${gameInQuestion.yellowScore}
-        }`);
-      } else {
-        res.send(`
-        {
-          "target": ${gameInQuestion.target},
-          "winner": "${winner}",
-          "player": "${player}",
-          "redScore": ${gameInQuestion.redScore},
-          "yellowScore": ${gameInQuestion.yellowScore}
-        }`);
+      const message = {
+        "target": gameInQuestion.target,
+        "winner": winner,
+        "player": player,
+        "redScore": gameInQuestion.redScore,
+        "yellowScore": gameInQuestion.yellowScore
       }
+      res.json(message);
     })
     .catch((err) => res.status(400).send('Id does not match any games'));
 });
 
 app.put('/beginGame/:id', async (req, res) => {
-  // TO DO:
-  //    use data from file instead of global game state
   const { id } = req.params;
   const rows = 6;
   const columns = 7;

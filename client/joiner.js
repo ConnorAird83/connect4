@@ -267,9 +267,6 @@ $('#reset-button').click(() => {
   $('#winner-display').css('color', 'black');
 
   // set all board circle to white
-  fetch('/newBoard/:rows/:columns/:target/:id', {
-    method: 'PUT',
-  })
   fetch(`${baseURL}/reset/${gameId}`, {
     method: 'PUT',
   });

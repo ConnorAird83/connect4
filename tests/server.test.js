@@ -6,6 +6,7 @@ const mock = require('mock-fs');
 const request = require('supertest');
 const { app, getTheGame } = require('../server/server.js');
 const c4 = require('../server/connect4.js');
+const { getCurrentPlayer } = require('../server/connect4.js');
 const fs = require('fs').promises;
 
 require('iconv-lite').encodingExists('foo');
@@ -213,30 +214,16 @@ describe('/newBoard/:rows/:columns/:target/:id', () => {
         .end(done);
   });
 
-  it('When a non-existing id is given a new board is created', async () => {
+  // TO DO: change to test for an error instead of a newly created gameState
+  it('When a non-existing id is given an error is returned', (done) => {
     // Arrange
     const newId = 'fih3efd3894yf93';
-    const newBoard = [
-      [null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null],
-    ];
+    const message = 'Id does not match any games';
 
-    await request(app)
+    request(app)
       .put(`/newBoard/8/7/4/${newId}`)
-      .expect(200, newBoard)
-      .then(async () => {
-        const endData = await fs.readFile('data/games.json', 'utf-8')
-          .then((result) => JSON.parse(result));
-        expect(endData.length).toBe(2);
-        expect(endData.filter((game) => game.id === newId)[0])
-          .toEqual({ ...mockData()[0], board: newBoard, id: newId, yellowScore: 0 });
-      });
+      .expect(400, message)
+      .end(done)
   });
 
   each([
@@ -390,7 +377,6 @@ describe('/winner/:id', () => {
   });
 });
 
-// TO DO
 describe('/getState/:id', () => {
   it('When a non-existing id is provided an error is returned', (done) => {
     // Arrange
@@ -403,19 +389,105 @@ describe('/getState/:id', () => {
         .end(done)
   });
 
-  it('When a valid id is provided the correct state is returned', () => {
+  each([
+    [
+      '["yellow"]',
+      '["red"]',
+      [
+        { ...mockData()[0], board: [
+            [null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null],
+            [null, 'yellow', null, null, null, null, null],
+            [null, 'yellow', null, null, null, null, null],
+            [null, 'yellow', null, null, null, null, null],
+            [null, 'red', 'red', 'red', 'red', null, null],
+          ],
+        }
+      ],
+    ],
+    [
+      '["yellow"]',
+      '[null]',
+      mockData(),
+    ],
+    [
+      '["yellow"]',
+      '["nobody"]',
+      [
+        { ...mockData()[0], board: [
+            ['yellow', 'yellow', 'red', 'red', 'yellow', 'yellow', 'red'],
+            ['red', 'red', 'yellow', 'yellow', 'red', 'red', 'yellow'],
+            ['yellow', 'yellow', 'red', 'red', 'yellow', 'yellow', 'red'],
+            ['red', 'red', 'yellow', 'yellow', 'red', 'red', 'yellow'],
+            ['yellow', 'yellow', 'red', 'red', 'yellow', 'yellow', 'red'],
+            ['red', 'red', 'yellow', 'yellow', 'red', 'red', 'yellow'],
+          ]
+        }
+      ],
+    ],
+  ]).it('When a valid id is provided the correct state is returned', (currentPlayer, expectedWinner, mockedData, done) => {
+    // clear mock and set to required mock
+    mock.restore();
+    mock({
+      data: {
+        'games.json': JSON.stringify(mockedData),
+      },
+    });
     // Arrange
+    const playerSpy = jest.spyOn(c4, 'getCurrentPlayer').mockImplementation(() => currentPlayer);
+    const winnerSpy = jest.spyOn(c4, 'checkWinner').mockImplementation(() => expectedWinner);
     const id  = '69';
-    const message = '["red"]';
+    const message = {
+      "target": 4,
+      "winner": expectedWinner,
+      "player": currentPlayer,
+      "redScore": 0,
+      "yellowScore": 1,
+    };
 
     request(app)
-        .get(`/currentPlayer/${id}`)
-        .expect(200, message)
+        .get(`/getState/${id}`)
+        .expect(200, JSON.stringify(message))
+        .expect(() => {
+          expect(playerSpy.mock.calls.length).toBe(1);
+          expect(winnerSpy.mock.calls.length).toBe(1)
+        })
         .end(done);
   });
 });
 
 describe('/beginGame/:id', () => {
-  it.todo('When an invalid id is provided an error is returned');
-  it.todo('When a valid id is provided a new game is created');
+  it('When a new id is provided a new game is created', async () => {
+    // Arrange
+    const newId = 'ehdui23y89hd3ui';
+    const expectedResponse = { ...mockData()[0], id: newId, yellowScore: 0 };
+    // Act
+    await request(app)
+      .put(`/beginGame/${newId}`)
+      .expect(200, expectedResponse)
+      .then(async () => {
+        const endData = await fs.readFile('data/games.json', 'utf-8')
+          .then((result) => JSON.parse(result));
+        expect(endData.length).toBe(2);
+        expect(endData.filter((game) => game.id === newId)[0])
+          .toEqual(expectedResponse);
+      })
+  });
+
+  it('When an existing id is provided the correct game is returned', async () => {
+    // Arrange
+    const newId = '69';
+    const expectedResponse = { ...mockData()[0] };
+    // Act
+    await request(app)
+      .put(`/beginGame/${newId}`)
+      .expect(200, expectedResponse)
+      .then(async () => {
+        const endData = await fs.readFile('data/games.json', 'utf-8')
+          .then((result) => JSON.parse(result));
+        expect(endData.length).toBe(1);
+        expect(endData.filter((game) => game.id === newId)[0])
+          .toEqual(expectedResponse);
+      })
+  });
 });
