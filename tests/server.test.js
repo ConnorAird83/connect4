@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 describe('getTheGame', () => {
-  it('when getTheGame is called with an incorrect id an error is thrown', async () => {
+  it('when getTheGame is called with an incorrect id an error is thrown', () => {
     // Arrange
     const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     const id = '12345';
@@ -50,7 +50,7 @@ describe('getTheGame', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('When getTheGame is called with a correct id the appropriate game is returned', async () => {
+  it('When getTheGame is called with a correct id the appropriate game is returned', () => {
     // Arrange
     const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     const id = '69';
@@ -143,7 +143,7 @@ describe('/place/:id/:column/:edit', () => {
         [null, null, 'red', null, null, null, null],
       ],
     ],
-  ]).it("When edit is true/false an edit is/isn't made", async (id, column, edit, row, endBoard, done) => {
+  ]).it("When edit is true/false an edit is/isn't made", (id, column, edit, row, endBoard, done) => {
     const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     request(app)
       .post(`/place/${id}/${column}/${edit}`)
@@ -159,23 +159,21 @@ describe('/place/:id/:column/:edit', () => {
   });
 });
 
-// TO DO
-describe('/newBoard/:rows/:columns/:target/:id', () => {  
-  console.log(mockData()[0].board);
+describe('/newBoard/:rows/:columns/:target/:id', () => { 
   each([
     // Invalid rows
     [
       -9,
       7,
       4,
-      69,
+      "69",
       'Rows must be a positive integer',
     ],
     [
       'foo bar',
       7,
       4,
-      69,
+      "69",
       'Rows must be a positive integer',
     ],
     // Invalid columns
@@ -183,14 +181,14 @@ describe('/newBoard/:rows/:columns/:target/:id', () => {
       6,
       -7,
       4,
-      69,
+      "69",
       'Columns must be a positive integer',
     ],
     [
       6,
       'foo bar',
       4,
-      69,
+      "69",
       'Columns must be a positive integer',
     ],
     // Invalid target
@@ -198,14 +196,14 @@ describe('/newBoard/:rows/:columns/:target/:id', () => {
       6,
       7,
       -4,
-      69,
+      "69",
       'Target must be a positive integer',
     ],
     [
       6,
       7,
       'foo bar',
-      69,
+      "69",
       'Target must be a positive integer',
     ],
   ]).it('When invalid inputs are provided an error is returned', (rows, columns, target, id, message, done) => {
@@ -215,19 +213,87 @@ describe('/newBoard/:rows/:columns/:target/:id', () => {
         .end(done);
   });
 
-  it('When a non-existing id is given a new board is created', (done) => {
-    const id = 'fih3efd3894yf93';
-    request(app)
-      .put(`/newBoard/6/7/4/${id}`)
-      .expect(200, mockData()[0].board.slice())
-      .end(done);
+  it('When a non-existing id is given a new board is created', async () => {
+    // Arrange
+    const newId = 'fih3efd3894yf93';
+    const newBoard = [
+      [null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null],
+    ];
+
+    await request(app)
+      .put(`/newBoard/8/7/4/${newId}`)
+      .expect(200, newBoard)
+      .then(async () => {
+        const endData = await fs.readFile('data/games.json', 'utf-8')
+          .then((result) => JSON.parse(result));
+        expect(endData.length).toBe(2);
+        expect(endData.filter((game) => game.id === newId)[0])
+          .toEqual({ ...mockData()[0], board: newBoard, id: newId, yellowScore: 0 });
+      });
   });
 
-  it.todo('When valid inputs are provided a new board is created');
+  each([
+    [
+      8,
+      7,
+      4,
+      "69",
+      [
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null],
+      ],
+    ],
+    [
+      3,
+      4,
+      2,
+      "69",
+      [
+        [null, null, null, null],
+        [null, null, null, null],
+        [null, null, null, null],
+      ],
+    ],
+  ]).it('When valid, existing inputs are provided a new board is created', async (rows, columns, newTarget, id, newBoard) => {
+    await request(app)
+        .put(`/newBoard/${rows}/${columns}/${newTarget}/${id}`)
+        .expect(200, newBoard)
+        .then(async () => {
+          const endData = await fs.readFile('data/games.json', 'utf-8')
+            .then((result) => JSON.parse(result));
+          expect(endData.length).toBe(1);
+          expect(endData.filter((game) => game.id === id)[0])
+            .toEqual({ ...mockData()[0], board: newBoard , target: newTarget });
+        });
+  });
 });
 
+// TO DO
 describe('/currentPlayer/:id', () => {
-  it.todo('When a non-existent id is provided an error is returned');
+  it('When a non-existant id is provided an error is returned', (done) => {
+    // Arrange
+    const id  = 'eidg2uidh3iu';
+    const message = 'Id does not match any games';
+
+    request(app)
+        .get(`/currentPlayer/${id}`)
+        .expect(400, message)
+        .end(done)
+  });
+
   it.todo('When a valid id is provided the correct player is returned');
 });
 

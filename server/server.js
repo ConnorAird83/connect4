@@ -107,22 +107,22 @@ app.put('/reset/:id', async (req, res) => {
 app.put('/newBoard/:rows/:columns/:target/:id', async (req, res) => {
   let gameObj = {};
   let finalGames = [];
-  const { rows } = req.params;
-  const { columns } = req.params;
+  const rows = parseInt(req.params.rows);
+  const columns = parseInt(req.params.columns);
   const { id } = req.params;
-  const newTarget = req.params.target;
+  const newTarget = parseInt(req.params.target);
   // Check rows is valid
-  if (isNaN(parseInt(rows)) || (parseInt(rows) < 0)) {
+  if (isNaN(rows) || (rows < 0)) {
     res.status(400).send('Rows must be a positive integer');
     return;
   }
   // Check columns is valid
-  if (isNaN(parseInt(columns)) || (parseInt(columns) < 0)) {
+  if (isNaN(columns) || (columns < 0)) {
     res.status(400).send('Columns must be a positive integer');
     return;
   }
   // Check target is valid
-  if (isNaN(parseInt(newTarget)) || (parseInt(newTarget) < 0)) {
+  if (isNaN(newTarget) || (newTarget < 0)) {
     res.status(400).send('Target must be a positive integer');
     return;
   }
@@ -131,18 +131,19 @@ app.put('/newBoard/:rows/:columns/:target/:id', async (req, res) => {
 
   // store the pre-existing game data
   const storedGames = await c4.getGames();
+  const allGames = c4.deepCopy(storedGames);
 
   // check if the game already exists
-  const gameInQuestion = storedGames.filter((match) => match.id === id);
+  const gameInQuestion = allGames.filter((match) => match.id === id);
   // if the game does not exist yet, create a new game object
   if (gameInQuestion.length === 0) {
-    gameObj = c4.newGameState(newBoard, newTarget);
+    gameObj = c4.newGameState(newBoard, newTarget, id);
     // append this new object to the stored games
-    storedGames.unshift(gameObj);
-    finalGames = storedGames;
+    allGames.unshift(gameObj);
+    finalGames = c4.deepCopy(allGames);
   } else {
     // delete existing game object from the data file
-    finalGames = storedGames.filter((match) => match.id !== id);
+    finalGames = allGames.filter((match) => match.id !== id);
     // update the existing game state with the new variables
     gameObj = gameInQuestion[0];
     gameObj.board = newBoard;
@@ -166,7 +167,7 @@ app.get('/currentPlayer/:id', (req, res) => {
   getTheGame(id)
     .then((gameInQuestion) => c4.getCurrentPlayer(gameInQuestion.board, gameInQuestion.firstPlayer))
     .then((player) => res.send([player]))
-    .catch((err) => res.send(err));
+    .catch((err) => res.status(400).send('Id does not match any games'));
 });
 
 // get the winner
