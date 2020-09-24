@@ -10,7 +10,7 @@ const fs = require('fs').promises;
 
 require('iconv-lite').encodingExists('foo');
 
-const mockData = [{
+const mockData = () => [{
   board:
   [
     [null, null, null, null, null, null, null],
@@ -30,7 +30,7 @@ const mockData = [{
 beforeEach(() => {
   mock({
     data: {
-      'games.json': JSON.stringify(mockData),
+      'games.json': JSON.stringify(mockData()),
     },
   });
 });
@@ -43,7 +43,7 @@ afterEach(() => {
 describe('getTheGame', () => {
   it('when getTheGame is called with an incorrect id an error is thrown', async () => {
     // Arrange
-    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     const id = '12345';
     // Act & Assert
     expect(getTheGame(id)).rejects.toEqual(new Error('Game id does not exist!'));
@@ -52,17 +52,17 @@ describe('getTheGame', () => {
 
   it('When getTheGame is called with a correct id the appropriate game is returned', async () => {
     // Arrange
-    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     const id = '69';
     // Act & Assert
-    expect(getTheGame(id)).resolves.toEqual({ ...mockData[0] });
+    expect(getTheGame(id)).resolves.toEqual({ ...mockData()[0] });
     expect(spy).toHaveBeenCalled();
   });
 });
 
 describe('/reset/:id', () => {
   it('when reset request is called the correct board is reset', (done) => {
-    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     request(app)
       .put('/reset/69')
       .expect('Content-Type', 'text/html; charset=utf-8')
@@ -71,7 +71,7 @@ describe('/reset/:id', () => {
   });
 
   it('When an incorrect id is given an error message is returned', (done) => {
-    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     const id = 'ehfu34hr89';
     request(app)
       .put(`/reset/${id}`)
@@ -87,7 +87,7 @@ describe('/place/:id/:column/:edit', () => {
       'djd2u12hdbd23ueh2',
       2,
       false,
-      mockData.slice(),
+      mockData(),
       'Id not found',
     ],
     // Incorrect column
@@ -95,21 +95,21 @@ describe('/place/:id/:column/:edit', () => {
       '69',
       100,
       false,
-      mockData.slice(),
+      mockData(),
       'Invalid column number given',
     ],
     [
       '69',
       'foo bar',
       false,
-      mockData.slice(),
+      mockData(),
       'Column must be an integer',
     ],
     [ // incorrect edit
       '69',
       2,
       'foo bar',
-      mockData.slice(),
+      mockData(),
       'Parameter "edit" must be a boolean value',
     ],
   ]).it('When an invalid parameter is given an error is returned', (id, column, edit, mockedData, message, done) => {
@@ -127,7 +127,7 @@ describe('/place/:id/:column/:edit', () => {
       2,
       false,
       5,
-      mockData[0].board,
+      mockData()[0].board,
     ],
     [
       '69',
@@ -144,7 +144,7 @@ describe('/place/:id/:column/:edit', () => {
       ],
     ],
   ]).it("When edit is true/false an edit is/isn't made", async (id, column, edit, row, endBoard, done) => {
-    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData.slice());
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData());
     request(app)
       .post(`/place/${id}/${column}/${edit}`)
       .expect('Content-Type', 'text/html; charset=utf-8')
@@ -153,14 +153,15 @@ describe('/place/:id/:column/:edit', () => {
         const endData = await fs.readFile('data/games.json', 'utf-8')
           .then((result) => JSON.parse(result));
         expect(endData.filter((game) => game.id === id)[0])
-          .toEqual({ ...mockData[0], board: endBoard });
+          .toEqual({ ...mockData()[0], board: endBoard });
         done();
       });
   });
 });
 
 // TO DO
-describe('/newBoard/:rows/:columns/:target/:id', () => {
+describe('/newBoard/:rows/:columns/:target/:id', () => {  
+  console.log(mockData()[0].board);
   each([
     // Invalid rows
     [
@@ -209,12 +210,18 @@ describe('/newBoard/:rows/:columns/:target/:id', () => {
     ],
   ]).it('When invalid inputs are provided an error is returned', (rows, columns, target, id, message, done) => {
     request(app)
-      .put(`/newBoard/${rows}/${columns}/${target}/${id}`)
-      .expect(400, message)
-      .end(done);
+        .put(`/newBoard/${rows}/${columns}/${target}/${id}`)
+        .expect(400, message)
+        .end(done);
   });
 
-  it.todo('When a non-existing id is given an error is returned');
+  it('When a non-existing id is given a new board is created', (done) => {
+    const id = 'fih3efd3894yf93';
+    request(app)
+      .put(`/newBoard/6/7/4/${id}`)
+      .expect(200, mockData()[0].board.slice())
+      .end(done);
+  });
 
   it.todo('When valid inputs are provided a new board is created');
 });

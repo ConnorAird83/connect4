@@ -94,7 +94,7 @@ app.put('/reset/:id', async (req, res) => {
     // *** get the state of the game in question ***
     const storedGames = await c4.getGames();
     const gameInQuestion = await getTheGame(id);
-    const board = gameInQuestion.board.slice();
+    const board = c4.deepCopy(gameInQuestion.board);
     gameInQuestion.board = c4.createDataBoard(board.length, board[0].length);
     c4.updateDataFile(storedGames, gameInQuestion);
     res.status(200).send('Board has been reset');
