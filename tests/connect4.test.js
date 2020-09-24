@@ -2,6 +2,7 @@
 const each = require('jest-each').default;
 const c4 = require('../server/connect4.js');
 const mock = require('mock-fs');
+const { updateDataFile } = require('../server/connect4.js');
 const fs = require('fs').promises;
 
 require('iconv-lite').encodingExists('foo');
@@ -23,19 +24,11 @@ const mockData = [{
   id: '69',
 }];
 
-// beforeEach(() => {
-//   mock({
-//     data: {
-//       'games.json': JSON.stringify(mockData),
-//     },
-//   });
-// });
-
 afterEach(() => {
   mock.restore();
 });
 
-describe('test createDataBoard', () => {
+describe('createDataBoard', () => {
   // Arrange
   each([
     [
@@ -84,7 +77,7 @@ describe('test createDataBoard', () => {
   });
 });
 
-describe('test placeCounter', () => {
+describe('placeCounter', () => {
   // Arrange
   each([
     [
@@ -143,7 +136,7 @@ describe('test placeCounter', () => {
   });
 });
 
-describe('test checkWinner', () => {
+describe('checkWinner', () => {
   // Arrange
   each([
     [
@@ -238,7 +231,7 @@ describe('test checkWinner', () => {
   });
 });
 
-describe('test getCurrentPlayer', () => {
+describe('getCurrentPlayer', () => {
   // Arrange
   each([
     [
@@ -333,7 +326,6 @@ describe('getGames', () => {
   });
 });
 
-// TO DO
 describe('updateDataFile', () => {
   it('when a happy update is proposed the file is updated correctly', async () => {
     mock({
@@ -356,7 +348,19 @@ describe('updateDataFile', () => {
     );
   });
 
-  it.todo('When the id of newGame does not match an existing game an error is returned');
+  it('When the id of newGame does not match an existing game an error is returned', () => {
+    mock({
+      data: {
+        'games.json': JSON.stringify(mockData),
+      }
+    })
+
+    const storedGames = mockData.slice();
+
+    const newGame = { ...mockData[0], id: 'ih43ury3489f3' };
+
+    expect(() => updateDataFile(storedGames, newGame)).toThrow(new Error(`No game found with the id ${newGame.id}`))
+  });
 });
 
 describe('newGameState', () => {

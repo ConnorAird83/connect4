@@ -198,6 +198,12 @@ function createDataBoard(rows, columns) {
 
 function updateDataFile(storedGames, newGame) {
   const copyOfGames = storedGames.slice();
+
+  // check for a valid id
+  if (!(storedGames.some((game) => game.id === newGame.id))) {
+    throw new Error(`No game found with the id ${newGame.id}`)
+  }
+
   // update the appropriate game in storedGames and then write out to the data file
   copyOfGames.forEach((game) => {
     const index = copyOfGames.indexOf(game);

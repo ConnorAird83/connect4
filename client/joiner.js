@@ -267,6 +267,9 @@ $('#reset-button').click(() => {
   $('#winner-display').css('color', 'black');
 
   // set all board circle to white
+  fetch('/newBoard/:rows/:columns/:target/:id', {
+    method: 'PUT',
+  })
   fetch(`${baseURL}/reset/${gameId}`, {
     method: 'PUT',
   });
@@ -276,5 +279,3 @@ $('#reset-button').click(() => {
   // hide the winner banner
   $('#winner-display').css('display', 'none');
 });
-
-// TO DO: change reset button to use newBoard request instead of reset request

@@ -273,5 +273,3 @@ module.exports = {
   getTheGame,
   app,
 };
-
-// TO DO: change reset button to use newBoard request instead of reset request

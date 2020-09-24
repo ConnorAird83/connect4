@@ -60,7 +60,6 @@ describe('getTheGame', () => {
   });
 });
 
-// TO DO
 describe('/reset/:id', () => {
   it('when reset request is called the correct board is reset', (done) => {
     const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
@@ -71,7 +70,15 @@ describe('/reset/:id', () => {
       .end(done);
   });
 
-  it.todo('When an incorrect id is given an error message is returned');
+  it('When an incorrect id is given an error message is returned', (done) => {
+    const spy = jest.spyOn(c4, 'getGames').mockImplementation(async () => mockData);
+    const id = 'ehfu34hr89';
+    request(app)
+      .put(`/reset/${id}`)
+      .expect('Content-Type', 'text/html; charset=utf-8')
+      .expect(404, 'Error reseting the board! Refresh the page and input the correct game id')
+      .end(done);
+  });
 });
 
 describe('/place/:id/:column/:edit', () => {
@@ -152,6 +159,7 @@ describe('/place/:id/:column/:edit', () => {
   });
 });
 
+// TO DO
 describe('/newBoard/:rows/:columns/:target/:id', () => {
   each([
     // Invalid rows
@@ -207,25 +215,26 @@ describe('/newBoard/:rows/:columns/:target/:id', () => {
   });
 
   it.todo('When a non-existing id is given an error is returned');
+
   it.todo('When valid inputs are provided a new board is created');
 });
 
-// describe('/currentPlayer/:id', () => {
-//   it.todo('When a non-existent id is provided an error is returned');
-//   it.todo('When a valid id is provided the correct player is returned');
-// });
+describe('/currentPlayer/:id', () => {
+  it.todo('When a non-existent id is provided an error is returned');
+  it.todo('When a valid id is provided the correct player is returned');
+});
 
-// describe('/winner/:id', () => {
-//   it.todo('When a non-existing id was provided an error was returned');
-//   it.todo('When a valid id is provided the correct winner is returned');
-// });
+describe('/winner/:id', () => {
+  it.todo('When a non-existing id was provided an error was returned');
+  it.todo('When a valid id is provided the correct winner is returned');
+});
 
-// describe('/getState/:id', () => {
-//   it.todo('When a non-existing id is provided an error is returned');
-//   it.todo('When a valid id is provided the correct state is returned');
-// });
+describe('/getState/:id', () => {
+  it.todo('When a non-existing id is provided an error is returned');
+  it.todo('When a valid id is provided the correct state is returned');
+});
 
-// describe('/beginGame/:id', () => {
-//   it.todo('When an invalid id is provided an error is returned');
-//   it.todo('When a valid id is provided a new game is created');
-// });
+describe('/beginGame/:id', () => {
+  it.todo('When an invalid id is provided an error is returned');
+  it.todo('When a valid id is provided a new game is created');
+});
