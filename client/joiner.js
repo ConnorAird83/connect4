@@ -259,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
             $('#title').text(`Connect ${targetValue}`);
   
             // request to create a new board
-            console.log(gameId);
             fetch(`${baseURL}/newBoard/${numberOfRows}/${numberOfColumns}/${targetValue}/${gameId}`, {
               method: 'PUT',
             }).then((response) => response.json())
@@ -268,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
               });
           });
         });
-    }, 500);
+    }, 2000);
   });
 });
 
@@ -289,6 +288,6 @@ $('#reset-button').click(() => {
 });
 
 
-module.exports = {
-  getRow,
-};
+// module.exports = {
+//   getRow,
+// };
