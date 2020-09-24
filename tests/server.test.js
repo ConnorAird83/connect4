@@ -281,7 +281,6 @@ describe('/newBoard/:rows/:columns/:target/:id', () => {
   });
 });
 
-// TO DO
 describe('/currentPlayer/:id', () => {
   it('When a non-existant id is provided an error is returned', (done) => {
     // Arrange
@@ -294,17 +293,126 @@ describe('/currentPlayer/:id', () => {
         .end(done)
   });
 
-  it.todo('When a valid id is provided the correct player is returned');
+  it('When a valid id is provided the correct player is returned', (done) => {
+    // Arrange
+    const id  = '69';
+    const message = '["red"]';
+
+    request(app)
+        .get(`/currentPlayer/${id}`)
+        .expect(200, message)
+        .end(done);
+  });
 });
 
 describe('/winner/:id', () => {
-  it.todo('When a non-existing id was provided an error was returned');
-  it.todo('When a valid id is provided the correct winner is returned');
+  it('When a non-existing id was provided an error was returned', (done) => {
+     // Arrange
+     const id  = 'rhf3u4f023hfiu3h0932h';
+     const message = 'Id does not match any games';
+ 
+     request(app)
+         .get(`/winner/${id}`)
+         .expect(400, message)
+         .end(done)
+  });
+
+  each([
+    [
+      '69',
+      'red',
+      0,
+      1,
+      mockData(),
+      '[null]',
+    ],
+    [
+      '69',
+      'yellow',
+      1,
+      1,
+      [
+        { ...mockData()[0], board: [
+            [null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null],
+            [null, 'yellow', null, null, null, null, null],
+            [null, 'yellow', null, null, null, null, null],
+            [null, 'yellow', null, null, null, null, null],
+            [null, 'red', 'red', 'red', 'red', null, null],
+          ] 
+        }
+      ],
+      '["red"]',
+    ],
+    [
+      '69',
+      'yellow',
+      0,
+      1,
+      [
+        { ...mockData()[0], board: [
+            ['yellow', 'yellow', 'red', 'red', 'yellow', 'yellow', 'red'],
+            ['red', 'red', 'yellow', 'yellow', 'red', 'red', 'yellow'],
+            ['yellow', 'yellow', 'red', 'red', 'yellow', 'yellow', 'red'],
+            ['red', 'red', 'yellow', 'yellow', 'red', 'red', 'yellow'],
+            ['yellow', 'yellow', 'red', 'red', 'yellow', 'yellow', 'red'],
+            ['red', 'red', 'yellow', 'yellow', 'red', 'red', 'yellow'],
+          ]
+        }
+      ],
+      '["nobody"]',
+    ],
+  ]).it('When a valid id is provided the correct winner is returned', async (id, newFirstPlayer, newRedScore, newYellowScore, mockedData, expectedWinner) => {
+    // Arrange 
+    // clear mock and set to required mock
+    mock.restore();
+    mock({
+      data: {
+        'games.json': JSON.stringify(mockedData),
+      },
+    });
+
+    // Act & Assert
+    await request(app)
+        .get(`/winner/${id}`)
+        .expect(200, expectedWinner)
+        .then(async () => {
+          const endData = await fs.readFile('data/games.json', 'utf-8')
+            .then((result) => JSON.parse(result));
+          expect(endData.length).toBe(1);
+          expect(endData[0])
+            .toEqual({ ...mockedData[0],
+              firstPlayer: newFirstPlayer, 
+              redScore: newRedScore, 
+              yellowScore: newYellowScore
+            });
+        })
+  });
 });
 
+// TO DO
 describe('/getState/:id', () => {
-  it.todo('When a non-existing id is provided an error is returned');
-  it.todo('When a valid id is provided the correct state is returned');
+  it('When a non-existing id is provided an error is returned', (done) => {
+    // Arrange
+    const id  = 'fy89yhf2iu3hfi34jd';
+    const message = 'Id does not match any games';
+
+    request(app)
+        .get(`/getState/${id}`)
+        .expect(400, message)
+        .end(done)
+  });
+
+  it('When a valid id is provided the correct state is returned', () => {
+    // Arrange
+    const id  = '69';
+    const message = '["red"]';
+
+    request(app)
+        .get(`/currentPlayer/${id}`)
+        .expect(200, message)
+        .end(done);
+  });
 });
 
 describe('/beginGame/:id', () => {

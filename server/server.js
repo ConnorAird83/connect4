@@ -193,7 +193,8 @@ app.get('/winner/:id', async (req, res) => {
       }
       c4.updateDataFile(storedGames, gameInQuestion);
       res.send([winner]);
-    });
+    })
+    .catch((err) => res.status(400).send('Id does not match any games'));
 });
 
 // request to get the current state of the board
@@ -228,7 +229,8 @@ app.get('/getState/:id', (req, res) => {
           "yellowScore": ${gameInQuestion.yellowScore}
         }`);
       }
-    });
+    })
+    .catch((err) => res.status(400).send('Id does not match any games'));
 });
 
 app.put('/beginGame/:id', async (req, res) => {
