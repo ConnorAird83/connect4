@@ -1,12 +1,10 @@
 /* eslint-disable no-undef */
 const each = require('jest-each').default;
 const axios = require('axios').default;
-const { get } = require('jquery');
 const mock = require('mock-fs');
 const request = require('supertest');
 const { app, getTheGame } = require('../server/server.js');
 const c4 = require('../server/connect4.js');
-const { getCurrentPlayer } = require('../server/connect4.js');
 const fs = require('fs').promises;
 
 require('iconv-lite').encodingExists('foo');

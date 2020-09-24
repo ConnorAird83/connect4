@@ -259,7 +259,6 @@ function newGameState(newBoard, newTarget, gameId) {
   };
 }
 
-// module = module || {};
 module.exports = {
   deepCopy,
   checkWinner,

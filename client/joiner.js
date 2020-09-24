@@ -5,6 +5,17 @@ let gameBoard = [];
 let firstPlayer = 'red';
 
 async function getRow(board, column) {
+  // check the board is the correct type
+  if (!Array.isArray(board)) {
+    throw new Error('Board must be a 2D array');
+  }
+  // check for a valid column value
+  if ((typeof column) !== 'number' || column < 0) {
+    throw new Error('Column must be a positive integer');
+  } else if (column > board[0].length) {
+    throw new Error('Column out of range');
+  }
+
   // loop over rows starting from the bottom
   for (let row = board.length - 1; row >= 0; row -= 1) {
     // if the appropriate cell is free return it's  position
@@ -276,3 +287,8 @@ $('#reset-button').click(() => {
   // hide the winner banner
   $('#winner-display').css('display', 'none');
 });
+
+
+module.exports = {
+  getRow,
+};
