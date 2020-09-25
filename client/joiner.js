@@ -297,7 +297,7 @@ $('#reset-button').click(() => {
 });
 
 
-module.exports = {
-  getRow,
-  getCurrentPlayer,
-};
+// module.exports = {
+//   getRow,
+//   getCurrentPlayer,
+// };
