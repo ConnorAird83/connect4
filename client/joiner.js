@@ -11,7 +11,7 @@ async function getRow(board, column) {
   // check for a valid column value
   if ((typeof column) !== 'number' || column < 0) {
     throw new Error('Column must be a positive integer');
-  } else if (column > board[0].length) {
+  } else if (column >= board[0].length) {
     throw new Error('Column out of range');
   }
 

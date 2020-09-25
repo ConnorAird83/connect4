@@ -50,7 +50,7 @@ describe('getRow', () => {
 
     it('When an out of range column is provided an error is returned', () => {
         // Arrange
-        const column = 10;
+        const column = 7;
         const board = [
             [null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null],
