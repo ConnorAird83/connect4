@@ -305,7 +305,9 @@ $('#reset-button').click(() => {
 });
 
 
-// module.exports = {
-//   getRow,
-//   getCurrentPlayer,
-// };
+if (module !== undefined) {
+  module.exports = {
+    getRow,
+    getCurrentPlayer,
+  };
+}
