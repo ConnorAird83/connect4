@@ -1,5 +1,4 @@
 const port = 3004;
-const baseURL = ''; // `http://localhost:${port}`;
 let gameId = '0';
 let gameBoard = [];
 let firstPlayer = 'red';
@@ -109,7 +108,7 @@ async function placeCounter(state, row, column) {
   updateScreenBoard(row, column, player);
 
   // get the new winner
-  const winner = await fetch(`${baseURL}/winner/${gameId}`)
+  const winner = await fetch(`/winner/${gameId}`)
     .then((response) => response.json())
     .then((winArray) => winArray[0]);
 
@@ -117,7 +116,7 @@ async function placeCounter(state, row, column) {
 }
 
 async function getEmptyRow(state, column) {
-  const row = await fetch(`${baseURL}/place/${gameId}/${column}/true`, {
+  const row = await fetch(`/place/${gameId}/${column}/true`, {
     method: 'POST',
   }).then((response) => response.json());
 
@@ -129,7 +128,7 @@ async function columnClicked(event) {
   const column = parseInt(event.currentTarget.id.split('-')[3], 10);
 
   // get the current state
-  const currentState = await fetch(`${baseURL}/getState/${gameId}`)
+  const currentState = await fetch(`/getState/${gameId}`)
     .then((response) => response.json());
 
   const firstWinner = currentState.winner;
@@ -149,7 +148,7 @@ async function columnClicked(event) {
         // if a winner has now been found, swap the first player and update the win counts
         if (winner !== null) {
           // get the new game state
-          fetch(`${baseURL}/getState/${gameId}`)
+          fetch(`/getState/${gameId}`)
             .then((response) => response.json())
             .then((newState) => {
               updateWinCounts(winner, newState);
@@ -240,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     idElement.text(gameId);
     // create inital boards
     setInterval(() => {
-      fetch(`${baseURL}/beginGame/${gameId}`, {
+      fetch(`/beginGame/${gameId}`, {
         method: 'PUT',
       }).then((response) => response.json())
       .then((gameState) => {
@@ -249,8 +248,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startGame(gameState);
       })
     }, 500);
-    
-    fetch(`${baseURL}/beginGame/${gameId}`, {
+
+    fetch(`/beginGame/${gameId}`, {
       method: 'PUT',
     }).then((response) => response.json())
       .then((gameState) => {
@@ -278,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
           $('#title').text(`Connect ${targetValue}`);
 
           // request to create a new board
-          fetch(`${baseURL}/newBoard/${numberOfRows}/${numberOfColumns}/${targetValue}/${gameId}`, {
+          fetch(`/newBoard/${numberOfRows}/${numberOfColumns}/${targetValue}/${gameId}`, {
             method: 'PUT',
           }).then((response) => response.json())
             .then((board) => {
@@ -295,7 +294,7 @@ $('#reset-button').click(() => {
   $('#winner-display').css('color', 'black');
 
   // set all board circle to white
-  fetch(`${baseURL}/reset/${gameId}`, {
+  fetch(`/reset/${gameId}`, {
     method: 'PUT',
   });
 
