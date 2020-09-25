@@ -5,6 +5,7 @@ const serv = require('./server.js');
 function deepCopy(array) {
   return JSON.parse(JSON.stringify(array));
 }
+
 function placeCounter(board, column) {
   // loop over rows starting from the bottom
   for (let row = board.length - 1; row >= 0; row -= 1) {
@@ -177,6 +178,15 @@ function getCurrentPlayer(board, starter) {
 }
 
 function createDataBoard(rows, columns) {
+  // check for valid rows parameter
+  if ((typeof rows !== 'number') || (rows < 0)) {
+    throw new Error('Rows must be a positive integer');
+  }
+  // check for valid columns parameter
+  if ((typeof columns !== 'number') || (columns < 0)) {
+    throw new Error('Columns must be a positive integer');
+  }
+  
   const newBoard = [];
   for (let i = 0; i < rows; i += 1) {
     const newRow = [];

@@ -29,6 +29,44 @@ afterEach(() => {
 });
 
 describe('createDataBoard', () => {
+  each([
+    // rows
+    [
+      'foo bar',
+      7,
+      'Rows must be a positive integer',
+    ],
+    [
+      -6,
+      7,
+      'Rows must be a positive integer',
+    ],
+    [
+      [468921, 'shdw', {key: 'element'}],
+      7,
+      'Rows must be a positive integer',
+    ],
+    // columns
+    [
+      6,
+      'foo bar',
+      'Columns must be a positive integer',
+    ],
+    [
+      6,
+      -7,
+      'Columns must be a positive integer',
+    ],
+    [
+      6,
+      [468921, 'shdw', {key: 'element'}],
+      'Columns must be a positive integer',
+    ],
+  ]).it('When invalid parameters are provided an error is returned', (rows, columns,expectedMessage) => {
+    // Act & Assert
+    expect(() => c4.createDataBoard(rows, columns)).toThrow(new Error(expectedMessage));
+  });
+
   // Arrange
   each([
     [
