@@ -11,6 +11,10 @@ body {
     align-items: center;
 }
 
+#game-id {
+    width: 10rem;
+}
+
 .circle {
     height: 80%;
     width: 80%;

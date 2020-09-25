@@ -3,6 +3,7 @@ let gameId = '0';
 let gameBoard = [];
 let firstPlayer = 'red';
 
+
 async function getRow(board, column) {
   // check the board is the correct type
   if (!Array.isArray(board)) {
@@ -255,7 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
       .then((gameState) => {
         gameBoard = gameState.board;
         firstPlayer = gameState.firstPlayer;
-        startGame(gameState);
+        if (gameState.players === 1) {
+          player = 'red';
+        } else {
+          player = 'yellow'
+        }
+        // startGame(gameState);
       })
       .then(() => {
         // draw the circles on the window and create the board data structure
@@ -305,7 +311,7 @@ $('#reset-button').click(() => {
 });
 
 
-if (module !== undefined) {
+if (typeof module !== 'undefined') {
   module.exports = {
     getRow,
     getCurrentPlayer,
