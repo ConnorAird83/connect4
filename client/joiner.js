@@ -243,40 +243,49 @@ document.addEventListener('DOMContentLoaded', () => {
       fetch(`${baseURL}/beginGame/${gameId}`, {
         method: 'PUT',
       }).then((response) => response.json())
-        .then((gameState) => {
-          gameBoard = gameState.board;
-          firstPlayer = gameState.firstPlayer;
-          startGame(gameState);
-        })
-        .then(() => {
-          // draw the circles on the window and create the board data structure
-          $('#draw-board').click(() => {
-            // allow the placing of more counters
-            $('#winner-display').css('color', 'black');
-  
-            // delete rows, columns, circles and their listeners
-            $('.row').remove();
-  
-            // get user input
-            const rowInput = $('#num-rows').val();
-            const columnInput = $('#num-columns').val();
-            const targetInput = $('#target-length').val();
-            // if input has been provided change values
-            const numberOfRows = (rowInput === '') ? 6 : rowInput;
-            const numberOfColumns = (columnInput === '') ? 7 : columnInput;
-            const targetValue = (targetInput === '') ? 4 : targetInput;
-            $('#title').text(`Connect ${targetValue}`);
-  
-            // request to create a new board
-            fetch(`${baseURL}/newBoard/${numberOfRows}/${numberOfColumns}/${targetValue}/${gameId}`, {
-              method: 'PUT',
-            }).then((response) => response.json())
-              .then((board) => {
-                createBoards(board);
-              });
-          });
-        });
+      .then((gameState) => {
+        gameBoard = gameState.board;
+        firstPlayer = gameState.firstPlayer;
+        startGame(gameState);
+      })
     }, 500);
+    
+    fetch(`${baseURL}/beginGame/${gameId}`, {
+      method: 'PUT',
+    }).then((response) => response.json())
+      .then((gameState) => {
+        gameBoard = gameState.board;
+        firstPlayer = gameState.firstPlayer;
+        startGame(gameState);
+      })
+      .then(() => {
+        // draw the circles on the window and create the board data structure
+        $('#draw-board').click(() => {
+          // allow the placing of more counters
+          $('#winner-display').css('color', 'black');
+
+          // delete rows, columns, circles and their listeners
+          $('.row').remove();
+
+          // get user input
+          const rowInput = $('#num-rows').val();
+          const columnInput = $('#num-columns').val();
+          const targetInput = $('#target-length').val();
+          // if input has been provided change values
+          const numberOfRows = (rowInput === '') ? 6 : rowInput;
+          const numberOfColumns = (columnInput === '') ? 7 : columnInput;
+          const targetValue = (targetInput === '') ? 4 : targetInput;
+          $('#title').text(`Connect ${targetValue}`);
+
+          // request to create a new board
+          fetch(`${baseURL}/newBoard/${numberOfRows}/${numberOfColumns}/${targetValue}/${gameId}`, {
+            method: 'PUT',
+          }).then((response) => response.json())
+            .then((board) => {
+              createBoards(board);
+            });
+        });
+      });
   });
 });
 
