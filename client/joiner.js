@@ -27,6 +27,15 @@ async function getRow(board, column) {
 }
 
 function getCurrentPlayer(board, starter) {
+  // check for valid starter inputs
+  if ((starter !== 'red') && (starter !== 'yellow')) {
+    throw new Error('starter must be a string containing either red or yellow');
+  }
+  // check for valid board inputs
+  if (!Array.isArray(board)) {
+    throw new Error('board must be a 2D array');
+  }
+
   // get 1D version of board
   const flatBoard = board.flat();
   let otherPlayer = 'yellow';
@@ -288,6 +297,7 @@ $('#reset-button').click(() => {
 });
 
 
-// module.exports = {
-//   getRow,
-// };
+module.exports = {
+  getRow,
+  getCurrentPlayer,
+};

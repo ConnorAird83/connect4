@@ -110,7 +110,6 @@ function checkWinner(board, target) {
     let rightCounter = board[0].length - 1;
     // loop over columns
     for (let column = 0; column < board[0].length - target + 1; column += 1) {
-      // console.log(row, column);
       // if a colour is encountered
       if (board[row][leftCounter] !== null) {
         winner = board[row][leftCounter];
