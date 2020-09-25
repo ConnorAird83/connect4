@@ -2,6 +2,8 @@ const port = 3004;
 let gameId = '0';
 let gameBoard = [];
 let firstPlayer = 'red';
+let userName = '';
+let password = '';
 
 
 async function getRow(board, column) {
@@ -236,42 +238,40 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#id-prompt').modal({ backdrop: 'static', keyboard: false });
   $('#submit-btn').click(() => {
     gameId = $('#game-id').val();
-    const idElement = $('#gameId');
-    idElement.text(gameId);
-    // create inital boards
-    setInterval(() => {
+    userName = $('#user-name').val();
+    password = $('#password').val();
+    if (gameId.length !== 0 && userName.length !== 0 & password.length !== 0) {
+      $('#id-prompt').modal('hide');
+      const idElement = $('#gameId');
+      idElement.text(gameId);
+      // create inital boards
+      setInterval(() => {
+        fetch(`/beginGame/${gameId}`, {
+          method: 'PUT',
+        }).then((response) => response.json())
+        .then((gameState) => {
+          gameBoard = gameState.board;
+          firstPlayer = gameState.firstPlayer;
+          startGame(gameState);
+        })
+      }, 500);
+      
       fetch(`/beginGame/${gameId}`, {
         method: 'PUT',
       }).then((response) => response.json())
       .then((gameState) => {
         gameBoard = gameState.board;
         firstPlayer = gameState.firstPlayer;
-        startGame(gameState);
-      })
-    }, 500);
-
-    fetch(`/beginGame/${gameId}`, {
-      method: 'PUT',
-    }).then((response) => response.json())
-      .then((gameState) => {
-        gameBoard = gameState.board;
-        firstPlayer = gameState.firstPlayer;
-        if (gameState.players === 1) {
-          player = 'red';
-        } else {
-          player = 'yellow'
-        }
-        // startGame(gameState);
       })
       .then(() => {
         // draw the circles on the window and create the board data structure
         $('#draw-board').click(() => {
           // allow the placing of more counters
           $('#winner-display').css('color', 'black');
-
+          
           // delete rows, columns, circles and their listeners
           $('.row').remove();
-
+          
           // get user input
           const rowInput = $('#num-rows').val();
           const columnInput = $('#num-columns').val();
@@ -281,16 +281,19 @@ document.addEventListener('DOMContentLoaded', () => {
           const numberOfColumns = (columnInput === '') ? 7 : columnInput;
           const targetValue = (targetInput === '') ? 4 : targetInput;
           $('#title').text(`Connect ${targetValue}`);
-
+          
           // request to create a new board
           fetch(`/newBoard/${numberOfRows}/${numberOfColumns}/${targetValue}/${gameId}`, {
             method: 'PUT',
           }).then((response) => response.json())
-            .then((board) => {
-              createBoards(board);
-            });
+          .then((board) => {
+            createBoards(board);
+          });
         });
       });
+      } else {
+          alert('A required field is empty!');
+      };
   });
 });
 
