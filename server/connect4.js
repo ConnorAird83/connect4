@@ -1,3 +1,11 @@
+const fs = require('fs').promises;
+const fileSystem = require('fs');
+const serv = require('./server.js');
+
+function deepCopy(array) {
+  return JSON.parse(JSON.stringify(array));
+}
+
 function placeCounter(board, column) {
   // loop over rows starting from the bottom
   for (let row = board.length - 1; row >= 0; row -= 1) {
@@ -7,16 +15,6 @@ function placeCounter(board, column) {
     }
   }
   return null;
-}
-
-function cleanBoard(board) {
-  const newBoard = board.slice();
-  for (let i = 0; i < newBoard.length; i += 1) {
-    for (let j = 0; j < newBoard[i].length; j += 1) {
-      newBoard[i][j] = null;
-    }
-  }
-  return newBoard;
 }
 
 function checkWinner(board, target) {
@@ -113,7 +111,6 @@ function checkWinner(board, target) {
     let rightCounter = board[0].length - 1;
     // loop over columns
     for (let column = 0; column < board[0].length - target + 1; column += 1) {
-      // console.log(row, column);
       // if a colour is encountered
       if (board[row][leftCounter] !== null) {
         winner = board[row][leftCounter];
@@ -181,6 +178,15 @@ function getCurrentPlayer(board, starter) {
 }
 
 function createDataBoard(rows, columns) {
+  // check for valid rows parameter
+  if ((typeof rows !== 'number') || (rows < 0)) {
+    throw new Error('Rows must be a positive integer');
+  }
+  // check for valid columns parameter
+  if ((typeof columns !== 'number') || (columns < 0)) {
+    throw new Error('Columns must be a positive integer');
+  }
+  
   const newBoard = [];
   for (let i = 0; i < rows; i += 1) {
     const newRow = [];
@@ -192,11 +198,83 @@ function createDataBoard(rows, columns) {
   return newBoard;
 }
 
-// module = module || {};
+function updateDataFile(storedGames, newGame) {
+  const copyOfGames = deepCopy(storedGames);
+
+  // check for a valid id
+  if (!(storedGames.some((game) => game.id === newGame.id))) {
+    throw new Error(`No game found with the id ${newGame.id}`)
+  }
+
+  // update the appropriate game in storedGames and then write out to the data file
+  copyOfGames.forEach((game) => {
+    const index = copyOfGames.indexOf(game);
+    if (game.id === newGame.id) {
+      copyOfGames[index] = { ...newGame };
+    }
+  });
+  fs.writeFile(
+    'data/games.json',
+    JSON.stringify(copyOfGames),
+    'utf-8',
+  );
+}
+
+// gets the existing boards from the data file
+async function getGames() {
+  // console.log('real getGames invoked');
+  try {
+    const output = await fs.readFile('./data/games.json', 'utf-8')
+      .then((fileData) => JSON.parse(fileData));
+
+    return output;
+  } catch (error1) {
+    try {
+      // if the file doesn't exist create it and return an empty array
+      await fs.writeFile(
+        './data/games.json',
+        '[]',
+        'utf-8',
+      );
+      return [];
+    } catch (error2) {
+      // create the directory and then write to the file inside of it
+      await fs.mkdir('./data', (err) => {
+        if (err) {
+          console.log(err.message);
+        } else {
+          console.log('New Directory was created');
+        }
+      });
+
+      await fs.writeFile(
+        './data/games.json',
+        '[]',
+        'utf-8',
+      );
+      return [];
+    }
+  }
+}
+
+function newGameState(newBoard, newTarget, gameId) {
+  return {
+    board: deepCopy(newBoard),
+    target: newTarget,
+    firstPlayer: 'red',
+    redScore: 0,
+    yellowScore: 0,
+    id: gameId,
+  };
+}
+
 module.exports = {
+  deepCopy,
   checkWinner,
-  cleanBoard,
   placeCounter,
   getCurrentPlayer,
   createDataBoard,
+  updateDataFile,
+  getGames,
+  newGameState,
 };

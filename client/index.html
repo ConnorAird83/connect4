@@ -10,9 +10,38 @@
 </head>
 
 <body>
-  <div class="bg">
+  <div class="bg"></div>
+
+    <div class="modal" id="id-prompt">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Load a Game</h4>
+          </div>
+
+          <div class="modal-body", id="modal-body">
+            <div>
+              <p>Input a game id</p>
+              <input class="input" id="game-id" type="text" name="game-id" />
+            </div>
+            <div>
+              <p>Input a User Name</p>
+              <input class="input" id="user-name" type="text" name="user-name" />
+              <p>Input a Password</p>
+              <input class="input" id="password" type="text" name="password" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" id="submit-btn">Begin</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class="flex-container">
       <h1 class="banner jumbotron" id="title">Connect 4</h1>
+      <h4 id="gameId-area">Game id: <span id="gameId"></span></h3>
       <div id="inputs">
         <p>Rows: <input class="input" id="num-rows" type="text" name="num-rows" /></p>
         <p> Columns: <input class="input" id="num-columns" type="text" name="num-columns" /></p>
@@ -41,6 +70,9 @@
       <p id="footer">Author: C. Aird</br> <a href="mailto:connor.aird@infinityworks.com">connor.aird@infinityworks.com</a></p>
     </footer>
   </div>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
   <script src="./joiner.js"></script>
 </body>
 
