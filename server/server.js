@@ -6,6 +6,8 @@ const app = express();
 
 app.use(express.static('./client'));
 
+const port = 3004;
+
 const getTheGame = async (id) => {
   // get the stored games
   const allGames = await c4.getGames();
@@ -92,7 +94,7 @@ app.put('/reset/:id', async (req, res) => {
     // *** get the state of the game in question ***
     const storedGames = await c4.getGames();
     const gameInQuestion = await getTheGame(id);
-    const board = gameInQuestion.board.slice();
+    const board = c4.deepCopy(gameInQuestion.board);
     gameInQuestion.board = c4.createDataBoard(board.length, board[0].length);
     c4.updateDataFile(storedGames, gameInQuestion);
     res.status(200).send('Board has been reset');
@@ -105,22 +107,22 @@ app.put('/reset/:id', async (req, res) => {
 app.put('/newBoard/:rows/:columns/:target/:id', async (req, res) => {
   let gameObj = {};
   let finalGames = [];
-  const { rows } = req.params;
-  const { columns } = req.params;
+  const rows = parseInt(req.params.rows);
+  const columns = parseInt(req.params.columns);
   const { id } = req.params;
-  const newTarget = req.params.target;
+  const newTarget = parseInt(req.params.target);
   // Check rows is valid
-  if (isNaN(parseInt(rows)) || (parseInt(rows) < 0)) {
+  if (isNaN(rows) || (rows < 0)) {
     res.status(400).send('Rows must be a positive integer');
     return;
   }
   // Check columns is valid
-  if (isNaN(parseInt(columns)) || (parseInt(columns) < 0)) {
+  if (isNaN(columns) || (columns < 0)) {
     res.status(400).send('Columns must be a positive integer');
     return;
   }
   // Check target is valid
-  if (isNaN(parseInt(newTarget)) || (parseInt(newTarget) < 0)) {
+  if (isNaN(newTarget) || (newTarget < 0)) {
     res.status(400).send('Target must be a positive integer');
     return;
   }
@@ -129,18 +131,17 @@ app.put('/newBoard/:rows/:columns/:target/:id', async (req, res) => {
 
   // store the pre-existing game data
   const storedGames = await c4.getGames();
+  const allGames = c4.deepCopy(storedGames);
 
   // check if the game already exists
-  const gameInQuestion = storedGames.filter((match) => match.id === id);
-  // if the game does not exist yet, create a new game object
+  const gameInQuestion = allGames.filter((match) => match.id === id);
+  // if the game does not exist yet, send an error back
   if (gameInQuestion.length === 0) {
-    gameObj = c4.newGameState(newBoard, newTarget);
-    // append this new object to the stored games
-    storedGames.unshift(gameObj);
-    finalGames = storedGames;
+    res.status(400).send('Id does not match any games');
+    return;
   } else {
     // delete existing game object from the data file
-    finalGames = storedGames.filter((match) => match.id !== id);
+    finalGames = allGames.filter((match) => match.id !== id);
     // update the existing game state with the new variables
     gameObj = gameInQuestion[0];
     gameObj.board = newBoard;
@@ -164,7 +165,7 @@ app.get('/currentPlayer/:id', (req, res) => {
   getTheGame(id)
     .then((gameInQuestion) => c4.getCurrentPlayer(gameInQuestion.board, gameInQuestion.firstPlayer))
     .then((player) => res.send([player]))
-    .catch((err) => res.send(err));
+    .catch((err) => res.status(400).send('Id does not match any games'));
 });
 
 // get the winner
@@ -190,7 +191,8 @@ app.get('/winner/:id', async (req, res) => {
       }
       c4.updateDataFile(storedGames, gameInQuestion);
       res.send([winner]);
-    });
+    })
+    .catch((err) => res.status(400).send('Id does not match any games'));
 });
 
 // request to get the current state of the board
@@ -206,31 +208,19 @@ app.get('/getState/:id', (req, res) => {
       const player = output[0];
       const winner = output[1];
       const gameInQuestion = output[2];
-      if (winner === null) {
-        res.send(`
-        {
-          "target": ${gameInQuestion.target},
-          "winner": ${winner},
-          "player": "${player}",
-          "redScore": ${gameInQuestion.redScore},
-          "yellowScore": ${gameInQuestion.yellowScore}
-        }`);
-      } else {
-        res.send(`
-        {
-          "target": ${gameInQuestion.target},
-          "winner": "${winner}",
-          "player": "${player}",
-          "redScore": ${gameInQuestion.redScore},
-          "yellowScore": ${gameInQuestion.yellowScore}
-        }`);
+      const message = {
+        "target": gameInQuestion.target,
+        "winner": winner,
+        "player": player,
+        "redScore": gameInQuestion.redScore,
+        "yellowScore": gameInQuestion.yellowScore
       }
-    });
+      res.json(message);
+    })
+    .catch((err) => res.status(400).send('Id does not match any games'));
 });
 
 app.put('/beginGame/:id', async (req, res) => {
-  // TO DO:
-  //    use data from file instead of global game state
   const { id } = req.params;
   const rows = 6;
   const columns = 7;
@@ -261,8 +251,8 @@ app.put('/beginGame/:id', async (req, res) => {
 });
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(8080, () => {
-    console.log('server started on port 8080');
+  app.listen(port, () => {
+    console.log(`server started on port ${port}`);
   });
 }
 // app.listen(8080);
@@ -271,5 +261,3 @@ module.exports = {
   getTheGame,
   app,
 };
-
-// TO DO: change reset button to use newBoard request instead of reset request

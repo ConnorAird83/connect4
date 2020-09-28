@@ -16,16 +16,24 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">Load A Game</h4>
+            <h4 class="modal-title">Load a Game</h4>
           </div>
 
-          <div class="modal-body">
-            <p>Input a game id</p>
-            <input class="input" id="game-id" type="text" name="game-id" />
+          <div class="modal-body", id="modal-body">
+            <div>
+              <p>Input a game id</p>
+              <input class="input" id="game-id" type="text" name="game-id" />
+            </div>
+            <div>
+              <p>Input a User Name</p>
+              <input class="input" id="user-name" type="text" name="user-name" />
+              <p>Input a Password</p>
+              <input class="input" id="password" type="text" name="password" />
+            </div>
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" id="submit-btn" data-dismiss="modal">Begin</button>
+            <button type="button" class="btn btn-danger" id="submit-btn">Begin</button>
           </div>
         </div>
       </div>
